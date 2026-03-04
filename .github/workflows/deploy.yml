@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: "main" # или "master", если ваша основная ветка называется так
+    branches: ["main"] # Убедитесь, что ваша ветка называется именно main
 
 permissions:
   contents: read
@@ -20,7 +20,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
@@ -31,7 +30,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          # Vite по умолчанию собирает проект в папку dist
           path: 'dist/'
 
   deploy:
