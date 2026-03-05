@@ -10,15 +10,29 @@ import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewId>(() => {
-    const saved = localStorage.getItem('heatload_current_view');
-    return (saved as ViewId) || 'home';
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_current_view') : null;
+      return (saved as ViewId) || 'home';
+    } catch (e) {
+      return 'home';
+    }
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [heatingVolumeInputs, setHeatingVolumeInputs] = useState<CalculationInputs>(() => {
-    const saved = localStorage.getItem('heatload_inputs_heating_volume');
-    return saved ? JSON.parse(saved) : DEFAULT_INPUTS;
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_heating_volume') : null;
+      if (!saved) return DEFAULT_INPUTS;
+      const parsed = JSON.parse(saved);
+      // Basic validation to ensure all required fields exist
+      if (typeof parsed.alpha === 'number' && typeof parsed.q0 === 'number') {
+        return parsed;
+      }
+      return DEFAULT_INPUTS;
+    } catch (e) {
+      return DEFAULT_INPUTS;
+    }
   });
 
   // Persistence
