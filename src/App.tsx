@@ -153,6 +153,29 @@ export default function App() {
     };
   }, [inputs]);
 
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+    }
+    setDeferredPrompt(null);
+  };
+
   const handleReset = () => {
     if (confirm('Сбросить все данные до значений по умолчанию?')) {
       setInputs(DEFAULT_INPUTS);
@@ -249,6 +272,15 @@ ${result.totalGcal} Гкал/час
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {showInstallBtn && (
+              <button 
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-emerald-600 active:scale-95"
+              >
+                <Maximize2 size={14} />
+                <span className="hidden sm:inline">Установить</span>
+              </button>
+            )}
             <button 
               onClick={handleReset}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
