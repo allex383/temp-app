@@ -23,14 +23,9 @@ if ('serviceWorker' in navigator) {
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed') {
               if (navigator.serviceWorker.controller) {
-                // New content is available; please refresh.
-                console.log('New content is available; please refresh.');
-                if (confirm('Доступно обновление приложения. Обновить сейчас?')) {
-                  window.location.reload();
-                }
-              } else {
-                // Content is cached for offline use.
-                console.log('Content is cached for offline use.');
+                // New content is available; refresh automatically or show a non-blocking toast
+                console.log('New content is available; refreshing...');
+                window.location.reload();
               }
             }
           };
