@@ -2,12 +2,10 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  base: '/temp-app/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/temp-app/' : '/',
   plugins: [
-    react({
-      fastRefresh: false,
-    }),
+    react(),
     tailwindcss(),
   ],
   server: {
@@ -19,4 +17,4 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
-});
+}));
