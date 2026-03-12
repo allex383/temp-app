@@ -1,12 +1,20 @@
-import { CalculationInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
-export const DEFAULT_INPUTS: CalculationInputs = {
+export const DEFAULT_HEATING_VOLUME_INPUTS: HeatingVolumeInputs = {
   alpha: 1.0,
   q0: 0.45,
   vn: 1000,
   vp: 0,
+  ti: 18,
+  to: -25,
+};
+
+export const DEFAULT_HEATING_NO_VOLUME_INPUTS: HeatingNoVolumeInputs = {
+  q0: 0, // Will be calculated or entered
+  area: 500,
+  k1: 0.25,
   ti: 18,
   to: -25,
 };
