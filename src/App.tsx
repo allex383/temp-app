@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, CalculationInputs } from './types';
-import { DEFAULT_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
+import { HeatingNoVolumeCalculator } from './components/HeatingNoVolumeCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -20,18 +21,31 @@ export default function App() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [heatingVolumeInputs, setHeatingVolumeInputs] = useState<CalculationInputs>(() => {
+  const [heatingVolumeInputs, setHeatingVolumeInputs] = useState<HeatingVolumeInputs>(() => {
     try {
       const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_heating_volume') : null;
-      if (!saved) return DEFAULT_INPUTS;
+      if (!saved) return DEFAULT_HEATING_VOLUME_INPUTS;
       const parsed = JSON.parse(saved);
-      // Basic validation to ensure all required fields exist
       if (typeof parsed.alpha === 'number' && typeof parsed.q0 === 'number') {
         return parsed;
       }
-      return DEFAULT_INPUTS;
+      return DEFAULT_HEATING_VOLUME_INPUTS;
     } catch (e) {
-      return DEFAULT_INPUTS;
+      return DEFAULT_HEATING_VOLUME_INPUTS;
+    }
+  });
+
+  const [heatingNoVolumeInputs, setHeatingNoVolumeInputs] = useState<HeatingNoVolumeInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_heating_no_volume') : null;
+      if (!saved) return DEFAULT_HEATING_NO_VOLUME_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.area === 'number' && typeof parsed.q0 === 'number') {
+        return parsed;
+      }
+      return DEFAULT_HEATING_NO_VOLUME_INPUTS;
+    } catch (e) {
+      return DEFAULT_HEATING_NO_VOLUME_INPUTS;
     }
   });
 
@@ -43,6 +57,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_heating_volume', JSON.stringify(heatingVolumeInputs));
   }, [heatingVolumeInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_heating_no_volume', JSON.stringify(heatingNoVolumeInputs));
+  }, [heatingNoVolumeInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -79,7 +97,13 @@ export default function App() {
           />
         );
       case 'heating-no-volume':
-        return <PlaceholderView title="Отопление: Без геометрических параметров" onBack={() => setCurrentView('home')} />;
+        return (
+          <HeatingNoVolumeCalculator 
+            inputs={heatingNoVolumeInputs} 
+            setInputs={setHeatingNoVolumeInputs} 
+            onBack={() => setCurrentView('home')} 
+          />
+        );
       case 'vent-supply':
         return <PlaceholderView title="Вентиляция: Приточная по объему" onBack={() => setCurrentView('home')} />;
       case 'vent-curtain':
