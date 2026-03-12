@@ -1,4 +1,4 @@
-export interface CalculationInputs {
+export interface HeatingVolumeInputs {
   alpha: number;
   q0: number;
   vn: number;
@@ -7,13 +7,22 @@ export interface CalculationInputs {
   to: number;
 }
 
+export interface HeatingNoVolumeInputs {
+  q0: number;
+  area: number;
+  k1: number;
+  ti: number;
+  to: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
   totalWatts: number;
-  volumeSum: number;
-  tempDiff: number;
+  volumeSum?: number;
+  tempDiff?: number;
   timestamp: string;
+  q0Calculated?: number;
 }
 
 export type ViewId = 
@@ -27,6 +36,6 @@ export type ViewId =
   | 'gvs';
 
 export interface AppState {
-  heatingVolume: CalculationInputs;
-  // Future states can be added here
+  heatingVolume: HeatingVolumeInputs;
+  heatingNoVolume: HeatingNoVolumeInputs;
 }
