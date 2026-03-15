@@ -13,6 +13,7 @@ import {
 import { motion } from 'motion/react';
 import { VentilationCurtainInputs } from '../types';
 import { DEFAULT_VENTILATION_CURTAIN_INPUTS } from '../constants';
+import { DENSITY_DATA } from '../densityData';
 import { InputField } from './InputField';
 
 interface VentilationCurtainCalculatorProps {
@@ -21,10 +22,30 @@ interface VentilationCurtainCalculatorProps {
   onBack: () => void;
 }
 
-// Helper to get air density based on temperature (approximate formula: 353 / (273.15 + t))
-// This will be refined when HTML data is provided
+// Helper to get air density based on temperature using provided table data
 const getAirDensity = (t: number) => {
-  return 353 / (273.15 + t);
+  const temps = Object.keys(DENSITY_DATA).map(Number).sort((a, b) => a - b);
+  const minT = temps[0];
+  const maxT = temps[temps.length - 1];
+
+  if (t <= minT) return DENSITY_DATA[minT];
+  if (t >= maxT) return DENSITY_DATA[maxT];
+
+  // Linear interpolation
+  const tLower = Math.floor(t);
+  const tUpper = Math.ceil(t);
+
+  if (tLower === tUpper) return DENSITY_DATA[tLower] || 1.2;
+
+  const dLower = DENSITY_DATA[tLower];
+  const dUpper = DENSITY_DATA[tUpper];
+
+  if (dLower === undefined || dUpper === undefined) {
+    // Fallback to physical formula if data point is missing in the middle (shouldn't happen with current data)
+    return 353 / (273.15 + t);
+  }
+
+  return dLower + (dUpper - dLower) * (t - tLower);
 };
 
 export const VentilationCurtainCalculator: React.FC<VentilationCurtainCalculatorProps> = ({ 
