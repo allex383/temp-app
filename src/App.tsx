@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
 import { HeatingNoVolumeCalculator } from './components/HeatingNoVolumeCalculator';
 import { VentilationVolumeCalculator } from './components/VentilationVolumeCalculator';
+import { VentilationCurtainCalculator } from './components/VentilationCurtainCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -64,6 +65,20 @@ export default function App() {
     }
   });
 
+  const [ventilationCurtainInputs, setVentilationCurtainInputs] = useState<VentilationCurtainInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_ventilation_curtain') : null;
+      if (!saved) return DEFAULT_VENTILATION_CURTAIN_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.height === 'number' && typeof parsed.width === 'number') {
+        return parsed;
+      }
+      return DEFAULT_VENTILATION_CURTAIN_INPUTS;
+    } catch (e) {
+      return DEFAULT_VENTILATION_CURTAIN_INPUTS;
+    }
+  });
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
@@ -80,6 +95,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_ventilation_volume', JSON.stringify(ventilationVolumeInputs));
   }, [ventilationVolumeInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_ventilation_curtain', JSON.stringify(ventilationCurtainInputs));
+  }, [ventilationCurtainInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -132,7 +151,13 @@ export default function App() {
           />
         );
       case 'vent-curtain':
-        return <PlaceholderView title="Вентиляция: Тепловая завеса" onBack={() => setCurrentView('home')} />;
+        return (
+          <VentilationCurtainCalculator
+            inputs={ventilationCurtainInputs}
+            setInputs={setVentilationCurtainInputs}
+            onBack={() => setCurrentView('home')}
+          />
+        );
       case 'tech-floor':
         return <PlaceholderView title="Технология: Теплый пол" onBack={() => setCurrentView('home')} />;
       case 'tech-pool':
