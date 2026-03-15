@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -24,6 +24,14 @@ export const DEFAULT_VENTILATION_VOLUME_INPUTS: VentilationVolumeInputs = {
   vn: 1000,
   ti: 18,
   to: -28,
+};
+
+export const DEFAULT_VENTILATION_CURTAIN_INPUTS: VentilationCurtainInputs = {
+  height: 2.5,
+  width: 2.0,
+  ti: 18,
+  to: -28,
+  curtainType: 'door',
 };
 
 export const ALPHA_TABLE = [
