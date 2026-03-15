@@ -15,6 +15,13 @@ export interface HeatingNoVolumeInputs {
   to: number;
 }
 
+export interface VentilationVolumeInputs {
+  qv: number;
+  vn: number;
+  ti: number;
+  to: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -38,4 +45,5 @@ export type ViewId =
 export interface AppState {
   heatingVolume: HeatingVolumeInputs;
   heatingNoVolume: HeatingNoVolumeInputs;
+  ventilationVolume: VentilationVolumeInputs;
 }
