@@ -22,6 +22,14 @@ export interface VentilationVolumeInputs {
   to: number;
 }
 
+export interface VentilationCurtainInputs {
+  height: number;
+  width: number;
+  ti: number;
+  to: number;
+  curtainType: 'door' | 'gate';
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -46,4 +54,5 @@ export interface AppState {
   heatingVolume: HeatingVolumeInputs;
   heatingNoVolume: HeatingNoVolumeInputs;
   ventilationVolume: VentilationVolumeInputs;
+  ventilationCurtain: VentilationCurtainInputs;
 }
