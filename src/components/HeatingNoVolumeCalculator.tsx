@@ -29,7 +29,6 @@ export const HeatingNoVolumeCalculator: React.FC<HeatingNoVolumeCalculatorProps>
   onBack
 }) => {
   const [isQ0ModalOpen, setIsQ0ModalOpen] = useState(false);
-  const [isToModalOpen, setIsToModalOpen] = useState(false);
 
   const result = useMemo<CalculationResult>(() => {
     const { q0, area, k1, ti, to } = inputs;
@@ -77,11 +76,9 @@ export const HeatingNoVolumeCalculator: React.FC<HeatingNoVolumeCalculatorProps>
 qo (укрупненный показатель): ${inputs.q0} Вт/м²
 A (общая площадь): ${inputs.area} м²
 k1 (коэффициент обществ. зданий): ${inputs.k1}
-to (температура снаружи): ${inputs.to} °C
 
 РАСЧЕТ:
 -------
-Δt = ${inputs.ti} - (${inputs.to}) = ${result.tempDiff} °C
 Qо мах = ${inputs.q0} × ${inputs.area} × (1 + ${inputs.k1}) = ${result.totalWatts} Вт
 
 ИТОГ:
@@ -185,33 +182,6 @@ ${result.totalGcal} Гкал/час
               />
             </div>
           </section>
-
-          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center gap-2 border-b border-zinc-100 pb-4">
-              <Thermometer size={18} className="text-zinc-400" />
-              <h2 className="text-sm font-bold uppercase tracking-wider">Климатические данные</h2>
-            </div>
-            
-            <div className="grid gap-6 sm:grid-cols-1">
-              <InputField 
-                label="to (Наружная темп.)" 
-                id="to" 
-                value={inputs.to} 
-                onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
-                suffix="°C"
-                hint="Расчетная температура наружного воздуха."
-                action={
-                  <button 
-                    onClick={() => setIsToModalOpen(true)}
-                    className="flex h-5 w-5 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
-                    title="Справочник t0"
-                  >
-                    <BookOpen size={14} />
-                  </button>
-                }
-              />
-            </div>
-          </section>
         </div>
 
         {/* Results Panel */}
@@ -246,10 +216,6 @@ ${result.totalGcal} Гкал/час
                   <span className="text-zinc-500 uppercase font-semibold">Общая площадь</span>
                   <span className="font-mono text-zinc-300">{inputs.area} м²</span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-zinc-500 uppercase font-semibold">Разность температур</span>
-                  <span className="font-mono text-zinc-300">{result.tempDiff} °C</span>
-                </div>
               </div>
             </motion.div>
 
@@ -262,11 +228,6 @@ ${result.totalGcal} Гкал/час
                   <p>= {result.totalWatts} × 10⁻⁶</p>
                   <p className="font-bold text-zinc-900">= {result.totalMW} МВт</p>
                   <p className="mt-1 text-[9px] text-zinc-400">Перевод в Гкал/час: {result.totalMW} × 0.859845 = {result.totalGcal} Гкал/час</p>
-                  <div className="mt-2 border-t border-zinc-200 pt-2 text-[9px]">
-                    <p className="font-bold">Расчет qo из справочника:</p>
-                    <p>qo = (Норма × (tᵢ - t₀)) / 86.4</p>
-                    <p className="text-[8px] text-zinc-400">tᵢ принята равной {inputs.ti}°C</p>
-                  </div>
                 </div>
               </div>
               <div className="mt-4 flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50 p-3 text-[10px] text-amber-800">
@@ -354,75 +315,7 @@ ${result.totalGcal} Гкал/час
               </div>
               
               <div className="border-t border-zinc-100 bg-zinc-50 px-6 py-4 text-[10px] text-zinc-500 italic">
-                * Выберите значение в таблице. Оно будет автоматически пересчитано в Вт/м² с учетом текущих температур tᵢ и t₀.
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* To Modal */}
-      <AnimatePresence>
-        {isToModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsToModalOpen(false)}
-              className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative flex h-full max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
-            >
-              <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50 px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
-                    <Thermometer size={16} />
-                  </div>
-                  <h2 className="text-lg font-bold tracking-tight">Справочник t₀</h2>
-                </div>
-                <button 
-                  onClick={() => setIsToModalOpen(false)}
-                  className="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-200 hover:text-zinc-900"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="overflow-hidden rounded-xl border border-zinc-100">
-                  <table className="w-full border-collapse text-left text-sm">
-                    <thead>
-                      <tr className="bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                        <th className="px-4 py-3">Период постройки</th>
-                        <th className="px-4 py-3 text-right">t₀, °C</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-50">
-                      {TO_DATA.map((item, idx) => (
-                        <tr 
-                          key={idx}
-                          onClick={() => { setInputs(prev => ({ ...prev, to: item.value })); setIsToModalOpen(false); }}
-                          className="group cursor-pointer transition-colors hover:bg-zinc-50"
-                        >
-                          <td className="px-4 py-4">
-                            <div className="font-semibold text-zinc-900">{item.period}</div>
-                            {item.note && <div className="text-[10px] text-zinc-400">{item.note}</div>}
-                          </td>
-                          <td className="px-4 py-4 text-right">
-                            <span className="rounded-lg bg-zinc-100 px-3 py-1.5 font-mono font-bold text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
-                              {item.value}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                * Выберите значение в таблице для автоматической подстановки укрупненного показателя.
               </div>
             </motion.div>
           </div>
