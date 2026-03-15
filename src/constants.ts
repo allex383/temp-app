@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -17,6 +17,13 @@ export const DEFAULT_HEATING_NO_VOLUME_INPUTS: HeatingNoVolumeInputs = {
   k1: 0.25,
   ti: 18,
   to: -25,
+};
+
+export const DEFAULT_VENTILATION_VOLUME_INPUTS: VentilationVolumeInputs = {
+  qv: 0.4,
+  vn: 1000,
+  ti: 18,
+  to: -28,
 };
 
 export const ALPHA_TABLE = [
