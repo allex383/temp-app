@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Download, 
   RefreshCw, 
@@ -8,12 +8,16 @@ import {
   AlertCircle,
   ArrowLeft,
   Wind,
-  Maximize2
+  Maximize2,
+  BookOpen,
+  X,
+  Search
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { VentilationCurtainInputs } from '../types';
 import { DEFAULT_VENTILATION_CURTAIN_INPUTS } from '../constants';
 import { DENSITY_DATA } from '../densityData';
+import { TO_DATA, TI_DATA } from '../q0Data';
 import { InputField } from './InputField';
 
 interface VentilationCurtainCalculatorProps {
@@ -53,6 +57,9 @@ export const VentilationCurtainCalculator: React.FC<VentilationCurtainCalculator
   setInputs,
   onBack
 }) => {
+  const [isToModalOpen, setIsToModalOpen] = useState(false);
+  const [isTiModalOpen, setIsTiModalOpen] = useState(false);
+
   const calculation = useMemo(() => {
     const { height, width, ti, to, curtainType } = inputs;
     
@@ -239,6 +246,15 @@ ${calculation.totalMW} МВт
                 onChange={(val) => setInputs(prev => ({ ...prev, ti: val }))}
                 suffix="°C"
                 hint="Расчетная температура воздуха в помещении."
+                action={
+                  <button 
+                    onClick={() => setIsTiModalOpen(true)}
+                    className="flex h-5 w-5 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                    title="Справочник ti"
+                  >
+                    <BookOpen size={14} />
+                  </button>
+                }
               />
 
               <InputField 
@@ -248,6 +264,15 @@ ${calculation.totalMW} МВт
                 onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
                 suffix="°C"
                 hint="Расчетная температура наружного воздуха."
+                action={
+                  <button 
+                    onClick={() => setIsToModalOpen(true)}
+                    className="flex h-5 w-5 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                    title="Справочник t0"
+                  >
+                    <BookOpen size={14} />
+                  </button>
+                }
               />
             </div>
           </section>
@@ -343,6 +368,142 @@ ${calculation.totalMW} МВт
           </div>
         </div>
       </div>
+
+      {/* Ti Modal */}
+      <AnimatePresence>
+        {isTiModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsTiModalOpen(false)}
+              className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative flex h-full max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            >
+              <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
+                    <Thermometer size={16} />
+                  </div>
+                  <h2 className="text-lg font-bold tracking-tight">Справочник tᵢ</h2>
+                </div>
+                <button 
+                  onClick={() => setIsTiModalOpen(false)}
+                  className="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-200 hover:text-zinc-900"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="overflow-hidden rounded-xl border border-zinc-100">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                        <th className="px-4 py-3">Тип помещения</th>
+                        <th className="px-4 py-3 text-right">tᵢ, °C</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-50">
+                      {TI_DATA.map((item, idx) => (
+                        <tr 
+                          key={idx}
+                          onClick={() => { setInputs(prev => ({ ...prev, ti: item.value })); setIsTiModalOpen(false); }}
+                          className="group cursor-pointer transition-colors hover:bg-zinc-50"
+                        >
+                          <td className="px-4 py-4">
+                            <div className="font-semibold text-zinc-900">{item.roomType}</div>
+                            {item.note && <div className="text-[10px] text-zinc-400">{item.note}</div>}
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <span className="rounded-lg bg-zinc-100 px-3 py-1.5 font-mono font-bold text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
+                              {item.value}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* To Modal */}
+      <AnimatePresence>
+        {isToModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsToModalOpen(false)}
+              className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative flex h-full max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            >
+              <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white">
+                    <Thermometer size={16} />
+                  </div>
+                  <h2 className="text-lg font-bold tracking-tight">Справочник t₀</h2>
+                </div>
+                <button 
+                  onClick={() => setIsToModalOpen(false)}
+                  className="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-200 hover:text-zinc-900"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="overflow-hidden rounded-xl border border-zinc-100">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                        <th className="px-4 py-3">Период постройки</th>
+                        <th className="px-4 py-3 text-right">t₀, °C</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-50">
+                      {TO_DATA.map((item, idx) => (
+                        <tr 
+                          key={idx}
+                          onClick={() => { setInputs(prev => ({ ...prev, to: item.value })); setIsToModalOpen(false); }}
+                          className="group cursor-pointer transition-colors hover:bg-zinc-50"
+                        >
+                          <td className="px-4 py-4">
+                            <div className="font-semibold text-zinc-900">{item.period}</div>
+                            {item.note && <div className="text-[10px] text-zinc-400">{item.note}</div>}
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <span className="rounded-lg bg-zinc-100 px-3 py-1.5 font-mono font-bold text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
+                              {item.value}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
