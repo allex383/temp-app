@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
@@ -10,6 +10,7 @@ import { HeatingNoVolumeCalculator } from './components/HeatingNoVolumeCalculato
 import { HeatingOutdoorAreaCalculator } from './components/HeatingOutdoorAreaCalculator';
 import { VentilationVolumeCalculator } from './components/VentilationVolumeCalculator';
 import { VentilationCurtainCalculator } from './components/VentilationCurtainCalculator';
+import { VentilationEquipmentCalculator } from './components/VentilationEquipmentCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -94,6 +95,20 @@ export default function App() {
     }
   });
 
+  const [ventilationEquipmentInputs, setVentilationEquipmentInputs] = useState<VentilationEquipmentInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_ventilation_equipment') : null;
+      if (!saved) return DEFAULT_VENTILATION_EQUIPMENT_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.L === 'number' && typeof parsed.c === 'number') {
+        return parsed;
+      }
+      return DEFAULT_VENTILATION_EQUIPMENT_INPUTS;
+    } catch (e) {
+      return DEFAULT_VENTILATION_EQUIPMENT_INPUTS;
+    }
+  });
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
@@ -118,6 +133,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_ventilation_curtain', JSON.stringify(ventilationCurtainInputs));
   }, [ventilationCurtainInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_ventilation_equipment', JSON.stringify(ventilationEquipmentInputs));
+  }, [ventilationEquipmentInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -182,6 +201,14 @@ export default function App() {
           <VentilationCurtainCalculator
             inputs={ventilationCurtainInputs}
             setInputs={setVentilationCurtainInputs}
+            onBack={() => setCurrentView('home')}
+          />
+        );
+      case 'vent-equipment':
+        return (
+          <VentilationEquipmentCalculator
+            inputs={ventilationEquipmentInputs}
+            setInputs={setVentilationEquipmentInputs}
             onBack={() => setCurrentView('home')}
           />
         );
