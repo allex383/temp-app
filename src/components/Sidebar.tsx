@@ -45,7 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
       icon: <Settings size={18} />,
       children: [
         { id: 'tech-floor', label: 'Теплый пол' },
-        { id: 'tech-pool', label: 'Первоначальный нагрев бассейна' }
+        { id: 'tech-pool', label: 'Первоначальный нагрев бассейна' },
+        { id: 'tech-pool-operating', label: 'Бассейн после промывки фильтра' }
       ]
     },
     { id: 'gvs', label: 'ГВС', icon: <Droplets size={18} /> },
