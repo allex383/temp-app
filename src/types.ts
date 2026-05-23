@@ -50,6 +50,13 @@ export interface PoolHeatingInputs {
   f: number;
 }
 
+export interface PoolOperatingInputs {
+  f: number;
+  vf: number;
+  purpose: 'preschool' | 'training' | 'wellness' | 'sports';
+  tpr: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -70,6 +77,7 @@ export type ViewId =
   | 'vent-equipment'
   | 'tech-floor' 
   | 'tech-pool' 
+  | 'tech-pool-operating'
   | 'gvs';
 
 export interface AppState {
@@ -80,4 +88,5 @@ export interface AppState {
   ventilationCurtain: VentilationCurtainInputs;
   ventilationEquipment: VentilationEquipmentInputs;
   poolHeating: PoolHeatingInputs;
+  poolOperating: PoolOperatingInputs;
 }
