@@ -213,7 +213,7 @@ ${calculation.totalMW} МВт
               </div>
 
               <InputField 
-                label="hпр - высота проема" 
+                label={<span>h<sub>пр</sub> — Высота проема</span>} 
                 id="height" 
                 value={inputs.height} 
                 onChange={(val) => setInputs(prev => ({ ...prev, height: val }))}
@@ -222,7 +222,7 @@ ${calculation.totalMW} МВт
               />
 
               <InputField 
-                label="wпр - ширина проема" 
+                label={<span>w<sub>пр</sub> — Ширина проема</span>} 
                 id="width" 
                 value={inputs.width} 
                 onChange={(val) => setInputs(prev => ({ ...prev, width: val }))}
@@ -240,7 +240,7 @@ ${calculation.totalMW} МВт
             
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="ti (Внутренняя темп.)" 
+                label={<span>t<sub>i</sub> — Внутренняя температура</span>} 
                 id="ti" 
                 value={inputs.ti} 
                 onChange={(val) => setInputs(prev => ({ ...prev, ti: val }))}
@@ -258,7 +258,7 @@ ${calculation.totalMW} МВт
               />
 
               <InputField 
-                label="to (Наружная темп.)" 
+                label={<span>t<sub>o</sub> — Наружная температура</span>} 
                 id="to" 
                 value={inputs.to} 
                 onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
@@ -284,7 +284,7 @@ ${calculation.totalMW} МВт
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div className="rounded-xl bg-zinc-50 p-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Fпр (Площадь)</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">F<sub>пр</sub> (Площадь)</div>
                 <div className="font-mono text-sm font-bold text-zinc-900">{calculation.Fpr.toFixed(2)} м²</div>
               </div>
               <div className="rounded-xl bg-zinc-50 p-3">
@@ -292,11 +292,11 @@ ${calculation.totalMW} МВт
                 <div className="font-mono text-sm font-bold text-zinc-900">{calculation.deltaP.toFixed(2)} Па</div>
               </div>
               <div className="rounded-xl bg-zinc-50 p-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">ρн (Плотность)</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">ρ<sub>н</sub> (Плотность)</div>
                 <div className="font-mono text-sm font-bold text-zinc-900">{calculation.rhoN.toFixed(3)}</div>
               </div>
               <div className="col-span-2 rounded-xl bg-zinc-50 p-3 sm:col-span-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Lз (Кол-во воздуха)</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">L<sub>з</sub> (Кол-во воздуха)</div>
                 <div className="font-mono text-sm font-bold text-zinc-900">{calculation.Lz.toLocaleString(undefined, { maximumFractionDigits: 0 })} кг/ч</div>
               </div>
             </div>
