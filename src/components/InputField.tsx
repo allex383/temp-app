@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Info } from 'lucide-react';
 
 interface InputFieldProps {
-  label: string;
+  label: React.ReactNode;
   id: string;
   value: number;
   onChange: (val: number) => void;
@@ -51,7 +51,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <label htmlFor={id} className="text-xs font-semibold tracking-wider text-zinc-500">
           {label}
         </label>
         <div className="flex items-center gap-2">
