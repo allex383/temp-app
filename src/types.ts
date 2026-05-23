@@ -44,6 +44,12 @@ export interface VentilationEquipmentInputs {
   to: number;
 }
 
+export interface PoolHeatingInputs {
+  vbas: number;
+  purpose: 'preschool' | 'training' | 'wellness' | 'sports';
+  f: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -73,4 +79,5 @@ export interface AppState {
   ventilationVolume: VentilationVolumeInputs;
   ventilationCurtain: VentilationCurtainInputs;
   ventilationEquipment: VentilationEquipmentInputs;
+  poolHeating: PoolHeatingInputs;
 }
