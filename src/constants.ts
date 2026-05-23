@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -46,6 +46,12 @@ export const DEFAULT_VENTILATION_EQUIPMENT_INPUTS: VentilationEquipmentInputs = 
   L: 3000,
   ti: 18,
   to: -25,
+};
+
+export const DEFAULT_POOL_HEATING_INPUTS: PoolHeatingInputs = {
+  vbas: 50000, // 50,000 liters
+  purpose: 'wellness', // 29 °C
+  f: 25, // 25 m2
 };
 
 export const ALPHA_TABLE = [
