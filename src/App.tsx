@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS, DEFAULT_POOL_HEATING_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
@@ -11,6 +11,7 @@ import { HeatingOutdoorAreaCalculator } from './components/HeatingOutdoorAreaCal
 import { VentilationVolumeCalculator } from './components/VentilationVolumeCalculator';
 import { VentilationCurtainCalculator } from './components/VentilationCurtainCalculator';
 import { VentilationEquipmentCalculator } from './components/VentilationEquipmentCalculator';
+import { PoolHeatingCalculator } from './components/PoolHeatingCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -109,6 +110,20 @@ export default function App() {
     }
   });
 
+  const [poolHeatingInputs, setPoolHeatingInputs] = useState<PoolHeatingInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_pool_heating') : null;
+      if (!saved) return DEFAULT_POOL_HEATING_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.vbas === 'number' && typeof parsed.f === 'number') {
+        return parsed;
+      }
+      return DEFAULT_POOL_HEATING_INPUTS;
+    } catch (e) {
+      return DEFAULT_POOL_HEATING_INPUTS;
+    }
+  });
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
@@ -137,6 +152,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_ventilation_equipment', JSON.stringify(ventilationEquipmentInputs));
   }, [ventilationEquipmentInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_pool_heating', JSON.stringify(poolHeatingInputs));
+  }, [poolHeatingInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -215,7 +234,13 @@ export default function App() {
       case 'tech-floor':
         return <PlaceholderView title="Технология: Теплый пол" onBack={() => setCurrentView('home')} />;
       case 'tech-pool':
-        return <PlaceholderView title="Технология: Бассейн" onBack={() => setCurrentView('home')} />;
+        return (
+          <PoolHeatingCalculator
+            inputs={poolHeatingInputs}
+            setInputs={setPoolHeatingInputs}
+            onBack={() => setCurrentView('home')}
+          />
+        );
       case 'gvs':
         return <PlaceholderView title="Горячее водоснабжение" onBack={() => setCurrentView('home')} />;
       default:
