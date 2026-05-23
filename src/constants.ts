@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -17,6 +17,13 @@ export const DEFAULT_HEATING_NO_VOLUME_INPUTS: HeatingNoVolumeInputs = {
   k1: 0.25,
   ti: 18,
   to: -25,
+};
+
+export const DEFAULT_HEATING_OUTDOOR_AREA_INPUTS: HeatingOutdoorAreaInputs = {
+  an: 23,
+  tn: 3,
+  to: -25,
+  sn: 100,
 };
 
 export const DEFAULT_VENTILATION_VOLUME_INPUTS: VentilationVolumeInputs = {
