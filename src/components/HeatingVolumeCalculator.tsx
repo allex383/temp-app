@@ -181,7 +181,7 @@ ${result.totalGcal} Гкал/час
             
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="α (Поправочный коэф.)" 
+                label={<span>α — Поправочный коэффициент</span>} 
                 id="alpha" 
                 value={inputs.alpha} 
                 onChange={(val) => setInputs(prev => ({ ...prev, alpha: val }))}
@@ -200,7 +200,7 @@ ${result.totalGcal} Гкал/час
               />
 
               <InputField 
-                label="q0 - уд. отопительная характеристика" 
+                label={<span>q<sub>0</sub> — Уд. отопительная характеристика</span>} 
                 id="q0" 
                 value={inputs.q0} 
                 onChange={(val) => setInputs(prev => ({ ...prev, q0: val }))}
@@ -218,7 +218,7 @@ ${result.totalGcal} Гкал/час
               />
 
               <InputField 
-                label="Vн (Наружный объем)" 
+                label={<span>V<sub>н</sub> — Наружный объем здания</span>} 
                 id="vn" 
                 value={inputs.vn} 
                 onChange={(val) => setInputs(prev => ({ ...prev, vn: val }))}
@@ -227,7 +227,7 @@ ${result.totalGcal} Гкал/час
               />
 
               <InputField 
-                label="Vп (Объем подвала)" 
+                label={<span>V<sub>п</sub> — Объем подвала</span>} 
                 id="vp" 
                 value={inputs.vp} 
                 onChange={(val) => setInputs(prev => ({ ...prev, vp: val }))}
@@ -245,7 +245,7 @@ ${result.totalGcal} Гкал/час
             
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="ti (Внутренняя темп.)" 
+                label={<span>t<sub>i</sub> — Внутренняя температура</span>} 
                 id="ti" 
                 value={inputs.ti} 
                 onChange={(val) => setInputs(prev => ({ ...prev, ti: val }))}
@@ -263,7 +263,7 @@ ${result.totalGcal} Гкал/час
               />
 
               <InputField 
-                label="to (Наружная темп.)" 
+                label={<span>t<sub>o</sub> — Наружная температура</span>} 
                 id="to" 
                 value={inputs.to} 
                 onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
