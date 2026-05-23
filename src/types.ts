@@ -30,6 +30,13 @@ export interface VentilationCurtainInputs {
   curtainType: 'door' | 'gate';
 }
 
+export interface HeatingOutdoorAreaInputs {
+  an: number;
+  tn: number;
+  to: number;
+  sn: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -44,6 +51,7 @@ export type ViewId =
   | 'home' 
   | 'heating-volume' 
   | 'heating-no-volume' 
+  | 'heating-outdoor-area'
   | 'vent-supply' 
   | 'vent-curtain' 
   | 'tech-floor' 
@@ -53,6 +61,7 @@ export type ViewId =
 export interface AppState {
   heatingVolume: HeatingVolumeInputs;
   heatingNoVolume: HeatingNoVolumeInputs;
+  heatingOutdoorArea: HeatingOutdoorAreaInputs;
   ventilationVolume: VentilationVolumeInputs;
   ventilationCurtain: VentilationCurtainInputs;
 }
