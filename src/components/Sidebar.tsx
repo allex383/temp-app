@@ -27,7 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
       icon: <Flame size={18} />,
       children: [
         { id: 'heating-volume', label: 'По наружному объему' },
-        { id: 'heating-no-volume', label: 'Без геом. параметров' }
+        { id: 'heating-no-volume', label: 'Без геом. параметров' },
+        { id: 'heating-outdoor-area', label: 'Обогрев наружной площадки' }
       ]
     },
     { 
