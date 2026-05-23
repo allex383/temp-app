@@ -52,7 +52,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           icon={<Settings className="text-zinc-500" />}
           items={[
             { id: 'tech-floor', label: 'Теплый пол' },
-            { id: 'tech-pool', label: 'Технология бассейна' }
+            { id: 'tech-pool', label: 'Первоначальный нагрев бассейна' }
           ]}
           onNavigate={onNavigate}
         />
