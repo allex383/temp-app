@@ -42,7 +42,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           icon={<Wind className="text-blue-500" />}
           items={[
             { id: 'vent-supply', label: 'Приточная вентиляция по объему' },
-            { id: 'vent-curtain', label: 'Тепловая завеса' }
+            { id: 'vent-curtain', label: 'Тепловая завеса' },
+            { id: 'vent-equipment', label: 'По производительности оборудования (L)' }
           ]}
           onNavigate={onNavigate}
         />
