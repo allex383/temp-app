@@ -143,7 +143,7 @@ Qот н = an × Δt × Sn = ${inputs.an} × ${result.tempDiff} × ${inputs.sn} 
             
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="an - Коэффициент теплоотдачи поверхности" 
+                label={<span>a<sub>n</sub> — Коэффициент теплоотдачи поверхности</span>} 
                 id="an" 
                 value={inputs.an} 
                 onChange={(val) => setInputs(prev => ({ ...prev, an: val }))}
@@ -152,7 +152,7 @@ Qот н = an × Δt × Sn = ${inputs.an} × ${result.tempDiff} × ${inputs.sn} 
               />
 
               <InputField 
-                label="Sn - Площадь обогреваемой площадки" 
+                label={<span>S<sub>n</sub> — Площадь обогреваемой площадки</span>} 
                 id="sn" 
                 value={inputs.sn} 
                 onChange={(val) => setInputs(prev => ({ ...prev, sn: val }))}
@@ -170,7 +170,7 @@ Qот н = an × Δt × Sn = ${inputs.an} × ${result.tempDiff} × ${inputs.sn} 
 
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="tn - Температура поверхности площадки" 
+                label={<span>t<sub>n</sub> — Температура поверхности площадки</span>} 
                 id="tn" 
                 value={inputs.tn} 
                 onChange={(val) => setInputs(prev => ({ ...prev, tn: val }))}
@@ -179,7 +179,7 @@ Qот н = an × Δt × Sn = ${inputs.an} × ${result.tempDiff} × ${inputs.sn} 
               />
 
               <InputField 
-                label="to - Температура наружного воздуха" 
+                label={<span>t<sub>o</sub> — Температура наружного воздуха</span>} 
                 id="to" 
                 value={inputs.to} 
                 onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
