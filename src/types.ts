@@ -37,6 +37,13 @@ export interface HeatingOutdoorAreaInputs {
   sn: number;
 }
 
+export interface VentilationEquipmentInputs {
+  c: number;
+  L: number;
+  ti: number;
+  to: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -54,6 +61,7 @@ export type ViewId =
   | 'heating-outdoor-area'
   | 'vent-supply' 
   | 'vent-curtain' 
+  | 'vent-equipment'
   | 'tech-floor' 
   | 'tech-pool' 
   | 'gvs';
@@ -64,4 +72,5 @@ export interface AppState {
   heatingOutdoorArea: HeatingOutdoorAreaInputs;
   ventilationVolume: VentilationVolumeInputs;
   ventilationCurtain: VentilationCurtainInputs;
+  ventilationEquipment: VentilationEquipmentInputs;
 }
