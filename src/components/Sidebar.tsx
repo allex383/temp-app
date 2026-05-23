@@ -36,7 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
       icon: <Wind size={18} />,
       children: [
         { id: 'vent-supply', label: 'Приточная по объему' },
-        { id: 'vent-curtain', label: 'Тепловая завеса' }
+        { id: 'vent-curtain', label: 'Тепловая завеса' },
+        { id: 'vent-equipment', label: 'По производительности оборудования' }
       ]
     },
     { 
