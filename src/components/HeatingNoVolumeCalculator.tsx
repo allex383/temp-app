@@ -144,7 +144,7 @@ ${result.totalGcal} Гкал/час
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <InputField 
-                  label="qo - укрупненный показатель макс. расхода теплоты" 
+                  label={<span>q<sub>о</sub> — Укрупненный показатель макс. расхода теплоты</span>} 
                   id="q0" 
                   value={inputs.q0} 
                   onChange={(val) => setInputs(prev => ({ ...prev, q0: val }))}
@@ -163,7 +163,7 @@ ${result.totalGcal} Гкал/час
               </div>
 
               <InputField 
-                label="A - общая площадь здания" 
+                label={<span>A — Общая площадь здания</span>} 
                 id="area" 
                 value={inputs.area} 
                 onChange={(val) => setInputs(prev => ({ ...prev, area: val }))}
@@ -172,7 +172,7 @@ ${result.totalGcal} Гкал/час
               />
 
               <InputField 
-                label="k1 - коэф. обществ. зданий" 
+                label={<span>k<sub>1</sub> — Коэффициент общественных зданий</span>} 
                 id="k1" 
                 value={inputs.k1} 
                 onChange={(val) => setInputs(prev => ({ ...prev, k1: val }))}
