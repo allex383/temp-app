@@ -144,7 +144,7 @@ ${result.totalMW} МВт
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <InputField 
-                  label="qv - уд. вентиляционная характеристика" 
+                  label={<span>q<sub>v</sub> — Удельная вентиляционная характеристика</span>} 
                   id="qv" 
                   value={inputs.qv} 
                   onChange={(val) => setInputs(prev => ({ ...prev, qv: val }))}
@@ -164,7 +164,7 @@ ${result.totalMW} МВт
 
               <div className="sm:col-span-2">
                 <InputField 
-                  label="Vн - объем здания по наружному обмеру" 
+                  label={<span>V<sub>н</sub> — Объем здания по наружному обмеру</span>} 
                   id="vn" 
                   value={inputs.vn} 
                   onChange={(val) => setInputs(prev => ({ ...prev, vn: val }))}
@@ -183,7 +183,7 @@ ${result.totalMW} МВт
             
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField 
-                label="ti (Внутренняя темп.)" 
+                label={<span>t<sub>i</sub> — Внутренняя температура в здании</span>} 
                 id="ti" 
                 value={inputs.ti} 
                 onChange={(val) => setInputs(prev => ({ ...prev, ti: val }))}
@@ -201,7 +201,7 @@ ${result.totalMW} МВт
               />
 
               <InputField 
-                label="to (Наружная темп.)" 
+                label={<span>t<sub>o</sub> — Наружная температура</span>} 
                 id="to" 
                 value={inputs.to} 
                 onChange={(val) => setInputs(prev => ({ ...prev, to: val }))}
