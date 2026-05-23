@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -52,6 +52,13 @@ export const DEFAULT_POOL_HEATING_INPUTS: PoolHeatingInputs = {
   vbas: 50000, // 50,000 liters
   purpose: 'wellness', // 29 °C
   f: 25, // 25 m2
+};
+
+export const DEFAULT_POOL_OPERATING_INPUTS: PoolOperatingInputs = {
+  f: 25, // 25 m2 mirror area
+  vf: 2000, // 2000 liters for filter washing
+  purpose: 'wellness', // 29 °C
+  tpr: 4, // 4 hours to reheat the water
 };
 
 export const ALPHA_TABLE = [
