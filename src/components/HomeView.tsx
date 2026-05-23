@@ -32,7 +32,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           icon={<Flame className="text-orange-500" />}
           items={[
             { id: 'heating-volume', label: 'По наружному объему здания' },
-            { id: 'heating-no-volume', label: 'При отсутствии геом. параметров' }
+            { id: 'heating-no-volume', label: 'При отсутствии геом. параметров' },
+            { id: 'heating-outdoor-area', label: 'Обогрев наружной площадки' }
           ]}
           onNavigate={onNavigate}
         />
