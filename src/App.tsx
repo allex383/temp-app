@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
 import { HeatingNoVolumeCalculator } from './components/HeatingNoVolumeCalculator';
+import { HeatingOutdoorAreaCalculator } from './components/HeatingOutdoorAreaCalculator';
 import { VentilationVolumeCalculator } from './components/VentilationVolumeCalculator';
 import { VentilationCurtainCalculator } from './components/VentilationCurtainCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
@@ -79,6 +80,20 @@ export default function App() {
     }
   });
 
+  const [heatingOutdoorAreaInputs, setHeatingOutdoorAreaInputs] = useState<HeatingOutdoorAreaInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_heating_outdoor_area') : null;
+      if (!saved) return DEFAULT_HEATING_OUTDOOR_AREA_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.sn === 'number' && typeof parsed.an === 'number') {
+        return parsed;
+      }
+      return DEFAULT_HEATING_OUTDOOR_AREA_INPUTS;
+    } catch (e) {
+      return DEFAULT_HEATING_OUTDOOR_AREA_INPUTS;
+    }
+  });
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
@@ -91,6 +106,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_heating_no_volume', JSON.stringify(heatingNoVolumeInputs));
   }, [heatingNoVolumeInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_heating_outdoor_area', JSON.stringify(heatingOutdoorAreaInputs));
+  }, [heatingOutdoorAreaInputs]);
 
   useEffect(() => {
     localStorage.setItem('heatload_inputs_ventilation_volume', JSON.stringify(ventilationVolumeInputs));
@@ -139,6 +158,14 @@ export default function App() {
           <HeatingNoVolumeCalculator 
             inputs={heatingNoVolumeInputs} 
             setInputs={setHeatingNoVolumeInputs} 
+            onBack={() => setCurrentView('home')} 
+          />
+        );
+      case 'heating-outdoor-area':
+        return (
+          <HeatingOutdoorAreaCalculator 
+            inputs={heatingOutdoorAreaInputs} 
+            setInputs={setHeatingOutdoorAreaInputs} 
             onBack={() => setCurrentView('home')} 
           />
         );
