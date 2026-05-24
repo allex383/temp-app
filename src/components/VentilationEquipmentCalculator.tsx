@@ -311,7 +311,7 @@ export const VentilationEquipmentCalculator: React.FC<VentilationEquipmentCalcul
           <section className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6 space-y-4">
             <div className="border-b border-zinc-100 pb-4 flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-900">
-                Шаги расчета (блоки раскрываются независимо)
+                Шаги расчета
               </h3>
               <span className="text-[11px] text-zinc-400">Нажмите для сворачивания</span>
             </div>
