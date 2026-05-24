@@ -178,7 +178,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
         <p className="text-sm text-zinc-500 max-w-3xl leading-relaxed">
           Определение максимальной (на время зацикленного наполнения) и усредненной среднечасовой тепловой составляющей системы водоподогрева для чаш с периодической сменой воды.
         </p>
-        <div className="h-1 w-20 rounded-full bg-indigo-650" />
+        <div className="h-1 w-20 rounded-full bg-indigo-600" />
       </div>
 
       {/* Visual Tab Switcher / Slide Control */}
@@ -187,7 +187,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
           <button
             onClick={() => setActiveTab('max')}
             className={`pb-4 px-1 text-sm font-bold tracking-tight relative transition-all ${
-              activeTab === 'max' ? 'text-indigo-650 font-bold' : 'text-zinc-400 hover:text-zinc-900'
+              activeTab === 'max' ? 'text-indigo-600 font-bold' : 'text-zinc-400 hover:text-zinc-900'
             }`}
           >
             <span className="flex items-center gap-2">
@@ -204,7 +204,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
           <button
             onClick={() => setActiveTab('average')}
             className={`pb-4 px-1 text-sm font-bold tracking-tight relative transition-all ${
-              activeTab === 'average' ? 'text-indigo-650 font-bold' : 'text-zinc-400 hover:text-zinc-900'
+              activeTab === 'average' ? 'text-indigo-600 font-bold' : 'text-zinc-400 hover:text-zinc-900'
             }`}
           >
             <span className="flex items-center gap-2">
@@ -322,7 +322,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
                       </div>
                     </div>
                     <div className={`rounded-lg px-2.5 py-1.5 font-mono text-xs font-extrabold transition-all border shrink-0 ${
-                      isSelected ? 'bg-indigo-650 border-indigo-650 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-700'
+                      isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-700'
                     }`}>
                       {details.temp}°C
                     </div>
@@ -485,7 +485,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-indigo-650 text-xs">
+                  <span className="font-mono font-bold text-indigo-600 text-xs">
                     {activeTab === 'max' ? calculations.qTbMax.toFixed(6) : calculations.qTbAverage.toFixed(6)} Гкал/ч
                   </span>
                   {openSteps[2] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
