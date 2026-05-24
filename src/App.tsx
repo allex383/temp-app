@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS, DEFAULT_POOL_HEATING_INPUTS, DEFAULT_POOL_OPERATING_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS, DEFAULT_POOL_HEATING_INPUTS, DEFAULT_POOL_OPERATING_INPUTS, DEFAULT_POOL_FLOW_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
@@ -13,6 +13,7 @@ import { VentilationCurtainCalculator } from './components/VentilationCurtainCal
 import { VentilationEquipmentCalculator } from './components/VentilationEquipmentCalculator';
 import { PoolHeatingCalculator } from './components/PoolHeatingCalculator';
 import { PoolOperatingCalculator } from './components/PoolOperatingCalculator';
+import { PoolFlowCalculator } from './components/PoolFlowCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -131,11 +132,25 @@ export default function App() {
       if (!saved) return DEFAULT_POOL_OPERATING_INPUTS;
       const parsed = JSON.parse(saved);
       if (typeof parsed.vf === 'number' && typeof parsed.f === 'number') {
-        return parsed;
+        return { ...DEFAULT_POOL_OPERATING_INPUTS, ...parsed };
       }
       return DEFAULT_POOL_OPERATING_INPUTS;
     } catch (e) {
       return DEFAULT_POOL_OPERATING_INPUTS;
+    }
+  });
+
+  const [poolFlowInputs, setPoolFlowInputs] = useState<PoolFlowInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_pool_flow') : null;
+      if (!saved) return DEFAULT_POOL_FLOW_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.vbas === 'number' && typeof parsed.purpose === 'string') {
+        return { ...DEFAULT_POOL_FLOW_INPUTS, ...parsed };
+      }
+      return DEFAULT_POOL_FLOW_INPUTS;
+    } catch (e) {
+      return DEFAULT_POOL_FLOW_INPUTS;
     }
   });
 
@@ -175,6 +190,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_pool_operating', JSON.stringify(poolOperatingInputs));
   }, [poolOperatingInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_pool_flow', JSON.stringify(poolFlowInputs));
+  }, [poolFlowInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -265,6 +284,14 @@ export default function App() {
           <PoolOperatingCalculator
             inputs={poolOperatingInputs}
             setInputs={setPoolOperatingInputs}
+            onBack={() => setCurrentView('home')}
+          />
+        );
+      case 'tech-pool-flow':
+        return (
+          <PoolFlowCalculator
+            inputs={poolFlowInputs}
+            setInputs={setPoolFlowInputs}
             onBack={() => setCurrentView('home')}
           />
         );
