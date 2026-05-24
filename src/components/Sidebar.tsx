@@ -51,7 +51,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
         { id: 'tech-pool-periodic', label: 'Бассейн с периодической сменой воды' }
       ]
     },
-    { id: 'gvs', label: 'ГВС с учетом водопотребителей', icon: <Droplets size={18} /> },
+    { 
+      label: 'ГВС', 
+      icon: <Droplets size={18} />,
+      children: [
+        { id: 'gvs', label: 'По водопотребителям' },
+        { id: 'gvs-points', label: 'По водоразборным точкам' },
+        { id: 'gvs-catering', label: 'Для предприятий общепита' }
+      ]
+    },
   ];
 
   const SidebarContent = () => (
