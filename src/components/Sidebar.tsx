@@ -47,7 +47,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
         { id: 'tech-floor', label: 'Теплый пол' },
         { id: 'tech-pool', label: 'Первоначальный нагрев бассейна' },
         { id: 'tech-pool-operating', label: 'Бассейн после промывки фильтра' },
-        { id: 'tech-pool-flow', label: 'Бассейн проточного типа' }
+        { id: 'tech-pool-flow', label: 'Бассейн проточного типа' },
+        { id: 'tech-pool-periodic', label: 'Бассейн с периодической сменой воды' }
       ]
     },
     { id: 'gvs', label: 'ГВС', icon: <Droplets size={18} /> },
