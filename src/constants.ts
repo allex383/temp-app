@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -59,6 +59,19 @@ export const DEFAULT_POOL_OPERATING_INPUTS: PoolOperatingInputs = {
   vf: 2000, // 2000 liters for filter washing
   purpose: 'wellness', // 29 °C
   tpr: 4, // 4 hours to reheat the water
+  vfMode: 'manual',
+  filterShape: 'circle',
+  filterDiameter: 0.6, // 0.6m diameter
+  filterWidth: 0.6, // 0.6m width
+  filterLength: 0.6, // 0.6m length
+  filterCount: 1, // 1 filter unit
+};
+
+export const DEFAULT_POOL_FLOW_INPUTS: PoolFlowInputs = {
+  vbas: 40, // 40 m³ pool volume
+  purpose: 'wellness', // 29 °C
+  tcMode: 'auto',
+  tcCustom: 12, // default water exchange time 
 };
 
 export const ALPHA_TABLE = [
