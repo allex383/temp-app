@@ -784,47 +784,6 @@ ${filterDetailsText.trim()}
             </div>
           </section>
 
-          {/* Graphical Split visualization of load components */}
-          <div className="space-y-3 bg-zinc-50/50 p-5 rounded-2xl border border-zinc-150">
-            <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex justify-between">
-              <span>Соотношение тепловиков:</span>
-              <span className="font-mono text-zinc-400">100%</span>
-            </h5>
-            
-            {(() => {
-              const total = calculation.totalWatts || 1;
-              const evapPct = (calculation.qEvap / total) * 100;
-              const washPct = (calculation.qPf / total) * 100;
-              return (
-                <div className="space-y-3">
-                  <div className="h-3 w-full bg-zinc-100 rounded-full overflow-hidden flex">
-                    <div 
-                      style={{ width: `${evapPct}%` }}
-                      className="bg-blue-500 h-full transition-all duration-500 ease-out"
-                    />
-                    <div 
-                      style={{ width: `${washPct}%` }}
-                      className="bg-indigo-500 h-full transition-all duration-500 ease-out"
-                    />
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-between text-[11px] pt-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-blue-500 shrink-0" />
-                      <span className="text-zinc-500">Потери с зеркала Q<sub>исп</sub>:</span>
-                      <span className="font-mono font-bold text-zinc-800">{Math.round(calculation.qEvap).toLocaleString()} Вт</span>
-                      <span className="text-zinc-450 font-mono">({evapPct.toFixed(1)}%)</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 shrink-0" />
-                      <span className="text-zinc-500">Догрев промывки Q<sub>пф</sub>:</span>
-                      <span className="font-mono font-bold text-zinc-800">{Math.round(calculation.qPf).toLocaleString()} Вт</span>
-                      <span className="text-zinc-450 font-mono">({washPct.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
 
           {/* Quick FAQ summary */}
           <section className="bg-zinc-50 p-4 rounded-xl border border-zinc-200/50 text-xs text-zinc-500 flex items-start gap-2.5">
