@@ -313,7 +313,7 @@ export const HeatingFloorCalculator: React.FC<HeatingFloorCalculatorProps> = ({
                     </div>
                   </div>
                   <div className={`rounded-lg px-2 py-1 font-mono text-xs font-extrabold transition-all border shrink-0 ${
-                    inputs.tnMode === preset.id ? 'bg-emerald-650 border-emerald-650 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-700'
+                    inputs.tnMode === preset.id ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-zinc-100 border-zinc-200 text-zinc-700'
                   }`}>
                     {preset.id === 'pool-walkway' ? `${Math.min(inputs.ti + 2, 35)} °C` : preset.tempText}
                   </div>
@@ -349,7 +349,7 @@ export const HeatingFloorCalculator: React.FC<HeatingFloorCalculatorProps> = ({
         <div className="lg:col-span-6 space-y-6">
           
           {/* Output Card */}
-          <div className="rounded-3xl bg-zinc-950 p-6 text-white shadow-xl border border-zinc-850 relative overflow-hidden flex flex-col justify-between h-48 transition-all">
+          <div className="rounded-3xl bg-zinc-950 p-6 text-white shadow-xl border border-zinc-850 relative overflow-hidden flex flex-col justify-between min-h-[12rem] h-auto transition-all">
             <div className="absolute right-0 top-0 -mr-6 -mt-6 h-32 w-32 bg-emerald-500/15 blur-3xl z-0" />
 
             <div className="z-10 flex items-center justify-between">
@@ -364,25 +364,25 @@ export const HeatingFloorCalculator: React.FC<HeatingFloorCalculatorProps> = ({
               )}
             </div>
 
-            <div className="z-10 mt-2">
-              <div className="flex items-baseline gap-1">
+            <div className="z-10 mt-3">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
                 <span className="text-4xl sm:text-5xl font-semibold tracking-tight text-white font-mono leading-none">
-                  {Math.round(calculations.qFloor).toLocaleString()}
+                  {calculations.totalGcal.toFixed(6)}
                 </span>
-                <span className="text-sm font-bold text-zinc-450 uppercase">Вт</span>
+                <span className="text-sm font-bold text-emerald-400 uppercase">Гкал/ч</span>
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-zinc-850 text-center">
-                <div className="space-y-0.5">
+              <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-zinc-850 text-center">
+                <div className="space-y-0.5 text-left pl-1">
+                  <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Вт</div>
+                  <div className="font-mono text-xs font-semibold text-zinc-150">{Math.round(calculations.qFloor).toLocaleString()}</div>
+                </div>
+                <div className="space-y-0.5 text-left pl-1">
                   <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">кВт</div>
-                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.totalKW.toFixed(2)}</div>
+                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.totalKW.toFixed(3)}</div>
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 text-left pl-1">
                   <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">МВт</div>
-                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.totalMW.toFixed(5)}</div>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Гкал/ч</div>
-                  <div className="font-mono text-xs font-semibold text-emerald-400">{calculations.totalGcal.toFixed(6)}</div>
+                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.totalMW.toFixed(6)}</div>
                 </div>
               </div>
             </div>
