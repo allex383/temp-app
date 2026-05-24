@@ -55,6 +55,19 @@ export interface PoolOperatingInputs {
   vf: number;
   purpose: 'preschool' | 'training' | 'wellness' | 'sports';
   tpr: number;
+  vfMode: 'manual' | 'calculate';
+  filterShape: 'circle' | 'rectangle';
+  filterDiameter: number;
+  filterWidth: number;
+  filterLength: number;
+  filterCount: number;
+}
+
+export interface PoolFlowInputs {
+  vbas: number; // m3
+  purpose: 'preschool' | 'training' | 'wellness';
+  tcMode: 'auto' | 'manual';
+  tcCustom: number; // hours
 }
 
 export interface CalculationResult {
@@ -78,6 +91,7 @@ export type ViewId =
   | 'tech-floor' 
   | 'tech-pool' 
   | 'tech-pool-operating'
+  | 'tech-pool-flow'
   | 'gvs';
 
 export interface AppState {
@@ -89,4 +103,5 @@ export interface AppState {
   ventilationEquipment: VentilationEquipmentInputs;
   poolHeating: PoolHeatingInputs;
   poolOperating: PoolOperatingInputs;
+  poolFlow: PoolFlowInputs;
 }
