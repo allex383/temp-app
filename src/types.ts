@@ -85,6 +85,28 @@ export interface FloorHeatingInputs {
   sn: number; // м2
 }
 
+export interface GvsConsumer {
+  id: string;
+  typeId: string;
+  count: number;
+  isCateringHelper?: boolean;
+  cateringSeats?: number;
+  cateringType?: 'canteen' | 'students' | 'industry' | 'restaurant' | 'other';
+  cateringHours?: number;
+  cateringRate?: 'dining' | 'takeaway';
+}
+
+export interface GvsInputs {
+  tgv: number;
+  txv: number;
+  ktpMode: 'insulated' | 'non-insulated';
+  ktpTowels: 'with' | 'without';
+  ktpExternal: 'with' | 'without';
+  ktpOverride: number | null;
+  T: number;
+  consumers: GvsConsumer[];
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -122,4 +144,5 @@ export interface AppState {
   poolFlow: PoolFlowInputs;
   poolPeriodic: PoolPeriodicInputs;
   floorHeating: FloorHeatingInputs;
+  gvs: GvsInputs;
 }
