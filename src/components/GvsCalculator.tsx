@@ -289,61 +289,61 @@ ${itemsReport || '   Водопотребители не добавлены.'}
         <div className="lg:col-span-7 space-y-6">
           
           {/* Section 1: System Config */}
-          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
-            <div className="border-b border-zinc-100 pb-4 flex items-center gap-2">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
+            <div className="border-b border-zinc-100 pb-3 sm:pb-4 flex items-center gap-2">
               <Sliders size={18} className="text-zinc-400" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-900">
                 1. Общие параметры системы ГВС
               </h2>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               {/* tgv Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
-                  t<sub>гв</sub> (Горячая вода)
-                  <span className="text-[10px] text-zinc-400 normal-case font-normal">(по умолч. 65°C)</span>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-500 flex flex-wrap items-center gap-1">
+                  <span>t<sub>гв</sub> (Горячая вода)</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">(65°C по умолч.)</span>
                 </label>
-                <div className="relative">
+                <div className="relative font-mono">
                   <input
                     type="number"
                     value={inputs.tgv}
                     onChange={(e) => setInputs(prev => ({ ...prev, tgv: Math.max(0, parseFloat(e.target.value) || 0) }))}
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3/5 py-2 sm:px-3.5 sm:py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
                   />
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400">°C</span>
                 </div>
               </div>
 
               {/* txv Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
-                  t<sub>хв</sub> (Холодная вода)
-                  <span className="text-[10px] text-zinc-400 normal-case font-normal">(по умолч. 5°C)</span>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-500 flex flex-wrap items-center gap-1">
+                  <span>t<sub>хв</sub> (Холодная вода)</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">(5°C по умолч.)</span>
                 </label>
-                <div className="relative">
+                <div className="relative font-mono">
                   <input
                     type="number"
                     value={inputs.txv}
                     onChange={(e) => setInputs(prev => ({ ...prev, txv: Math.max(0, parseFloat(e.target.value) || 0) }))}
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3/5 py-2 sm:px-3.5 sm:py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
                   />
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400">°C</span>
                 </div>
               </div>
 
               {/* T operating hours Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
-                  Период ГВС (T)
-                  <span className="text-[10px] text-zinc-400 normal-case font-normal">(сутки/смена)</span>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-500 flex flex-wrap items-center gap-1">
+                  <span>Период ГВС (T)</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">(смена в часах)</span>
                 </label>
-                <div className="relative">
+                <div className="relative font-mono">
                   <input
                     type="number"
                     value={inputs.T}
                     onChange={(e) => setInputs(prev => ({ ...prev, T: Math.min(24, Math.max(1, parseFloat(e.target.value) || 24)) }))}
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3/5 py-2 sm:px-3.5 sm:py-2.5 font-mono text-sm font-medium focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none transition-all pr-8"
                   />
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400">ч</span>
                 </div>
@@ -351,19 +351,19 @@ ${itemsReport || '   Водопотребители не добавлены.'}
             </div>
 
             {/* Coefficient Ktp selection block */}
-            <div className="space-y-3.5 pt-2 border-t border-zinc-100">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
+            <div className="space-y-3.5 pt-3 border-t border-zinc-100">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between">
+                <label className="text-xs font-bold text-zinc-700 flex items-center gap-1 flex-wrap">
                   Определение коэффициента теплопотерь трубопроводов ГВС (К<sub>тп</sub>)
                 </label>
-                <div className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                <div className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 self-start sm:self-auto shrink-0">
                   Ктп = {ktp.toFixed(2)}
                 </div>
               </div>
 
               {/* Custom Override Option */}
-              <div className="flex items-center gap-4 mb-2">
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-600 font-medium">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-2">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-zinc-650 font-semibold">
                   <input
                     type="checkbox"
                     checked={inputs.ktpOverride !== null}
@@ -371,13 +371,13 @@ ${itemsReport || '   Водопотребители не добавлены.'}
                       ...prev,
                       ktpOverride: e.target.checked ? 0.2 : null
                     }))}
-                    className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
                   />
                   Задать коэффициент вручную (ручной ввод)
                 </label>
 
                 {inputs.ktpOverride !== null && (
-                  <div className="relative w-28">
+                  <div className="relative w-full sm:w-28">
                     <input
                       type="number"
                       step="0.01"
@@ -385,18 +385,18 @@ ${itemsReport || '   Водопотребители не добавлены.'}
                       max="1"
                       value={inputs.ktpOverride}
                       onChange={(e) => setInputs(prev => ({ ...prev, ktpOverride: parseFloat(e.target.value) || 0 }))}
-                      className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-xs font-medium focus:border-blue-500 focus:bg-white outline-none"
+                      className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 sm:px-2 sm:py-1 font-mono text-xs font-medium focus:border-blue-500 focus:bg-white outline-none"
                     />
                   </div>
                 )}
               </div>
 
               {inputs.ktpOverride === null && (
-                <div className="bg-zinc-50 border border-zinc-150 rounded-xl p-3.5 space-y-3">
+                <div className="bg-zinc-50 border border-zinc-150 rounded-xl p-3 sm:p-4 space-y-3.5">
                   {/* Row 1: Insulated or not */}
                   <div className="space-y-1.5">
-                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Изоляция стояков</div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Изоляция стояков</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setInputs(prev => ({ ...prev, ktpMode: 'insulated' }))}
@@ -424,8 +424,8 @@ ${itemsReport || '   Водопотребители не добавлены.'}
 
                   {/* Row 2: Towel rails */}
                   <div className="space-y-1.5">
-                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Полотенцесушители</div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Полотенцесушители</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setInputs(prev => ({ ...prev, ktpTowels: 'with' }))}
@@ -453,8 +453,8 @@ ${itemsReport || '   Водопотребители не добавлены.'}
 
                   {/* Row 3: External networks after TSC */}
                   <div className="space-y-1.5">
-                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Наружные сети горячего водоснабжения после ЦТП</div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">Наружные сети горячего водоснабжения после ЦТП</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => setInputs(prev => ({ ...prev, ktpExternal: 'with' }))}
@@ -485,15 +485,15 @@ ${itemsReport || '   Водопотребители не добавлены.'}
           </section>
 
           {/* Section 2: Water Consumers list */}
-          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
-            <div className="border-b border-zinc-100 pb-4 flex items-center justify-between">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-6">
+            <div className="border-b border-zinc-100 pb-3 sm:pb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ClipboardList size={18} className="text-zinc-400" />
                 <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-900">
                   2. Список водопотребителей (Ui)
                 </h2>
               </div>
-              <span className="text-xs text-zinc-500 font-semibold bg-zinc-100 px-2.5 py-1 rounded-full">
+              <span className="text-xs text-zinc-500 font-semibold bg-zinc-100 px-2.5 py-1 rounded-full shrink-0">
                 Добавлено: {inputs.consumers.length}
               </span>
             </div>
@@ -721,49 +721,49 @@ ${itemsReport || '   Водопотребители не добавлены.'}
         </div>
 
         {/* Right Hand: OUTPUT RESULTS & SUMMARY */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-4 sm:space-y-6">
           
           {/* Main Gcal Load Output */}
-          <div className="rounded-3xl bg-zinc-950 p-6 text-white shadow-xl border border-zinc-850 relative overflow-hidden flex flex-col justify-between min-h-[12rem] h-auto transition-all">
+          <div className="rounded-2xl sm:rounded-3xl bg-zinc-950 p-4 sm:p-6 text-white shadow-xl border border-zinc-850 relative overflow-hidden flex flex-col justify-between min-h-[11rem] sm:min-h-[12rem] h-auto transition-all">
             <div className="absolute right-0 top-0 -mr-6 -mt-6 h-32 w-32 bg-blue-500/15 blur-3xl z-0" />
 
-            <div className="z-10 flex items-center justify-between">
-              <span className="text-xs font-bold tracking-wider uppercase text-blue-400 flex items-center gap-1.5">
-                <FlameKindling size={14} />
-                Тепловая нагрузка ГВС (Q<sub>гвс</sub><sup>ср</sup>)
+            <div className="z-10 flex items-center justify-between gap-2">
+              <span className="text-xs font-bold tracking-wider uppercase text-blue-400 flex items-center gap-1.5 min-w-0 truncate">
+                <FlameKindling size={14} className="shrink-0" />
+                <span className="truncate">Тепловая нагрузка ГВС (Q<sub>гвс</sub><sup>ср</sup>)</span>
               </span>
-              <span className="font-mono text-[10px] bg-zinc-900 border border-zinc-850 text-zinc-400 px-2 py-0.5 rounded font-bold">
+              <span className="font-mono text-[10px] bg-zinc-900 border border-zinc-850 text-zinc-400 px-2 py-0.5 rounded font-bold shrink-0">
                 T = {calculations.T_hours} ч
               </span>
             </div>
 
             <div className="z-10 mt-3">
               <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="text-4xl sm:text-5xl font-semibold tracking-tight text-white font-mono leading-none">
+                <span className="text-3xl sm:text-5xl font-semibold tracking-tight text-white font-mono leading-none">
                   {calculations.qGcal.toFixed(6)}
                 </span>
-                <span className="text-sm font-bold text-blue-400 uppercase">Гкал/ч</span>
+                <span className="text-xs sm:text-sm font-bold text-blue-400 uppercase">Гкал/ч</span>
               </div>
               
               <div className="mt-4 grid grid-cols-3 gap-2 pt-3 border-t border-zinc-850 text-center">
                 <div className="space-y-0.5 text-left pl-1">
                   <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Расход qТ</div>
-                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.qT.toFixed(3)} м³/ч</div>
+                  <div className="font-mono text-[11px] sm:text-xs font-semibold text-zinc-150">{calculations.qT.toFixed(3)} м³/ч</div>
                 </div>
                 <div className="space-y-0.5 text-left pl-1">
                   <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Мощность кВт</div>
-                  <div className="font-mono text-xs font-semibold text-zinc-150">{Math.round(calculations.qKW).toLocaleString()}</div>
+                  <div className="font-mono text-[11px] sm:text-xs font-semibold text-zinc-150">{Math.round(calculations.qKW).toLocaleString()}</div>
                 </div>
                 <div className="space-y-0.5 text-left pl-1">
                   <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Мощность МВт</div>
-                  <div className="font-mono text-xs font-semibold text-zinc-150">{calculations.qMW.toFixed(4)}</div>
+                  <div className="font-mono text-[11px] sm:text-xs font-semibold text-zinc-150">{calculations.qMW.toFixed(4)}</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Report copy / download tools */}
-          <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm flex flex-col sm:flex-row gap-2">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row gap-2">
             <button
               onClick={handleCopyReport}
               className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-55 border border-zinc-200 rounded-xl text-zinc-700 hover:bg-zinc-100 font-semibold text-xs active:scale-98 transition-all"
@@ -789,72 +789,7 @@ ${itemsReport || '   Водопотребители не добавлены.'}
             </button>
           </section>
 
-          {/* Visual Category Contribution Breakdown */}
-          {processedConsumers.length > 0 && (
-            <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4">
-              <div className="text-xs font-bold text-zinc-700 flex items-center gap-1.5 uppercase tracking-wider">
-                <ClipboardList size={14} className="text-zinc-400" />
-                <span>Структура водопотребления</span>
-              </div>
 
-              <div className="space-y-2.5">
-                {/* Visual Stacked horizontal contribution bar */}
-                <div className="h-2.5 w-full bg-zinc-100 rounded-full flex overflow-hidden">
-                  {processedConsumers.map((item, index) => {
-                    const percentage = calculations.totalDailyVolumeLiters > 0 
-                      ? (item.totalDailyVolume / calculations.totalDailyVolumeLiters) * 100
-                      : 0;
-                    if (percentage <= 0) return null;
-
-                    const colors = [
-                      'bg-blue-500', 'bg-emerald-500', 'bg-violet-500', 'bg-pink-500', 
-                      'bg-amber-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-orange-500'
-                    ];
-                    const bgClass = colors[index % colors.length];
-
-                    return (
-                      <div
-                        key={item.id}
-                        className={`${bgClass} h-full`}
-                        style={{ width: `${percentage}%` }}
-                        title={`${item.category?.name}: ${percentage.toFixed(1)}%`}
-                      />
-                    );
-                  })}
-                </div>
-
-                {/* Legend list */}
-                <div className="grid gap-2 text-[11px] font-sans">
-                  {processedConsumers.map((item, index) => {
-                    const percentage = calculations.totalDailyVolumeLiters > 0 
-                      ? (item.totalDailyVolume / calculations.totalDailyVolumeLiters) * 100
-                      : 0;
-                    if (percentage <= 0) return null;
-
-                    const colors = [
-                      'bg-blue-500', 'bg-emerald-500', 'bg-violet-500', 'bg-pink-500', 
-                      'bg-amber-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-orange-500'
-                    ];
-                    const bgClass = colors[index % colors.length];
-
-                    return (
-                      <div key={item.id} className="flex items-center justify-between text-zinc-650 leading-tight">
-                        <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                          <span className={`h-2.5 w-2.5 rounded-sm ${bgClass} shrink-0`} />
-                          <span className="truncate" title={item.category?.name}>
-                            {item.category?.name}
-                          </span>
-                        </div>
-                        <span className="font-mono font-bold text-zinc-800 shrink-0">
-                          {percentage.toFixed(1)}%
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          )}
 
           {/* Mathematical Step-by-Step details */}
           <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden divide-y divide-zinc-100">
