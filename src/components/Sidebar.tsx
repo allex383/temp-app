@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
             {item.id ? (
               <button
                 onClick={() => { onNavigate(item.id as ViewId); onClose(); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-all ${
                   currentView === item.id 
                     ? 'bg-white/10 text-white' 
                     : 'hover:bg-white/5 hover:text-zinc-200'
@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
                   <button
                     key={child.id}
                     onClick={() => { onNavigate(child.id as ViewId); onClose(); }}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all pl-10 ${
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-all pl-10 ${
                       currentView === child.id 
                         ? 'bg-white/10 text-white' 
                         : 'hover:bg-white/5 hover:text-zinc-200'
