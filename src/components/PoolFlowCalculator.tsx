@@ -111,7 +111,7 @@ export const PoolFlowCalculator: React.FC<PoolFlowCalculatorProps> = ({
 -------------------
 • Назначение бассейна: ${activePurpose.label}
 • Конечная температура воды (tв): ${targetTemp} °C
-• Объём воды в ванне бассейна (Vбас): ${inputs.vbas} м³
+• Объём воды в бассейне (Vбас): ${inputs.vbas} м³
 • Режим определения времени водообмена (Tc): ${inputs.tcMode === 'auto' ? 'Автоматический (по СНиП)' : 'Ручной ввод'}
 • Время полной смены воды (Tc): ${activeTc} ч
 • Начальная температура воды (tхв): ${TXV_CONST} °C (константа)
@@ -204,7 +204,7 @@ export const PoolFlowCalculator: React.FC<PoolFlowCalculatorProps> = ({
 
             {/* Vbas Input */}
             <InputField 
-              label={<span>V<sub>бас</sub> — Объем воды в ванне</span>} 
+              label={<span>V<sub>бас</sub> — Объем воды в бассейне</span>} 
               id="vbas" 
               value={inputs.vbas} 
               onChange={(val) => setInputs(prev => ({ ...prev, vbas: Math.max(0.1, val) }))}
@@ -471,7 +471,7 @@ export const PoolFlowCalculator: React.FC<PoolFlowCalculatorProps> = ({
                         </div>
                         <div className="text-zinc-500 pt-1 border-t border-zinc-200/50">
                           Где: <br/>
-                          - V<sub>бас</sub> = {inputs.vbas} м³ (Объем чаши)<br/>
+                          - V<sub>бас</sub> = {inputs.vbas} м³ (Объем бассейна)<br/>
                           - Т<sub>с</sub> = {activeTc} ч (Время водообмена)<br/>
                           - t<sub>в</sub> = {targetTemp}°C (Температура бассейна)<br/>
                           - t<sub>хв</sub> = {TXV_CONST}°C (Холодная подпиточная вода)
