@@ -77,6 +77,14 @@ export interface PoolPeriodicInputs {
   purpose: 'preschool' | 'training' | 'contrast' | 'thermal';
 }
 
+export interface FloorHeatingInputs {
+  an: number; // Вт/(м2*С)
+  tnMode: 'permanent' | 'preschool' | 'temporary' | 'pool-walkway' | 'manual';
+  tnCustom: number; // °C
+  ti: number; // °C
+  sn: number; // м2
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -113,4 +121,5 @@ export interface AppState {
   poolOperating: PoolOperatingInputs;
   poolFlow: PoolFlowInputs;
   poolPeriodic: PoolPeriodicInputs;
+  floorHeating: FloorHeatingInputs;
 }
