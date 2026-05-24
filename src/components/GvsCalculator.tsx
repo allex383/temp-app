@@ -263,15 +263,44 @@ ${itemsReport || '   Водопотребители не добавлены.'}
 
   return (
     <div className="space-y-6">
-      {/* Header and Back Button */}
-      <div className="space-y-2">
+      {/* Header with back button and action tools */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-150 pb-4">
         <button
           onClick={onBack}
-          className="group flex items-center gap-2 text-zinc-500 hover:text-zinc-950 transition-colors text-sm font-semibold"
+          className="group flex items-center gap-2 text-zinc-500 hover:text-zinc-950 transition-colors text-sm font-semibold self-start"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-          Назад в меню
+          Вернуться в меню
         </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            onClick={handleCopyReport}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 hover:bg-zinc-100 font-semibold text-xs active:scale-98 transition-all"
+          >
+            {copied ? (
+              <>
+                <Check size={13} className="text-green-600" />
+                <span>Скопировано!</span>
+              </>
+            ) : (
+              <>
+                <Copy size={13} />
+                <span>Буфер обмена</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleDownloadReport}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg text-blue-700 hover:bg-blue-100 font-semibold text-xs active:scale-98 transition-all"
+          >
+            <Download size={13} />
+            <span>Скачать отчет</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Header and Back Button */}
+      <div className="space-y-2">
         <div className="flex items-center gap-2.5">
           <Droplets size={24} className="text-blue-500" />
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
@@ -762,33 +791,6 @@ ${itemsReport || '   Водопотребители не добавлены.'}
             </div>
           </div>
 
-          {/* Report copy / download tools */}
-          <section className="rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row gap-2">
-            <button
-              onClick={handleCopyReport}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-55 border border-zinc-200 rounded-xl text-zinc-700 hover:bg-zinc-100 font-semibold text-xs active:scale-98 transition-all"
-            >
-              {copied ? (
-                <>
-                  <Check size={14} className="text-green-600" />
-                  Скопировано!
-                </>
-              ) : (
-                <>
-                  <Copy size={14} />
-                  Скопировать в буфер
-                </>
-              )}
-            </button>
-            <button
-              onClick={handleDownloadReport}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-xl text-blue-700 hover:bg-blue-100 font-semibold text-xs active:scale-98 transition-all"
-            >
-              <Download size={14} />
-              Скачать файл отчета
-            </button>
-          </section>
-
 
 
           {/* Mathematical Step-by-Step details */}
@@ -890,8 +892,8 @@ ${itemsReport || '   Водопотребители не добавлены.'}
                   <p>Находится по формуле теплосъема с учетом потерь трубопроводами (К<sub>тп</sub>):</p>
                   <div className="font-mono bg-white p-2 border border-zinc-150 text-[10.5px] rounded leading-loose">
                     Qгвс_ср = qТ · (tгв – tхв) · 10⁻³ · (1 + Ктп)<br />
-                    Qгвс_ср = {calculations.qT.toFixed(5)} · (${inputs.tgv} – ${inputs.txv}) · 0.001 · (1 + {ktp})<br />
-                    Qгвс_ср = {calculations.qT.toFixed(5)} · ${calculations.dt} · 0.001 · {1 + ktp} = <span className="text-blue-600 font-extrabold">{calculations.qGcal.toFixed(6)} Гкал/ч</span>
+                    Qгвс_ср = {calculations.qT.toFixed(5)} · ({inputs.tgv} – {inputs.txv}) · 0.001 · (1 + {ktp})<br />
+                    Qгвс_ср = {calculations.qT.toFixed(5)} · {calculations.dt} · 0.001 · {1 + ktp} = <span className="text-blue-600 font-extrabold">{calculations.qGcal.toFixed(6)} Гкал/ч</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
                     Эквивалентно в других тепловых единицах:<br />
