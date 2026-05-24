@@ -63,7 +63,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           title="ГВС" 
           icon={<Droplets className="text-cyan-500" />}
           items={[
-            { id: 'gvs', label: 'Горячее водоснабжение' }
+            { id: 'gvs', label: 'ГВС с учетом водопотребителей' }
           ]}
           onNavigate={onNavigate}
         />
