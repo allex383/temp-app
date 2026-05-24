@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs } from './types';
-import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS, DEFAULT_POOL_HEATING_INPUTS, DEFAULT_POOL_OPERATING_INPUTS, DEFAULT_POOL_FLOW_INPUTS, DEFAULT_POOL_PERIODIC_INPUTS, DEFAULT_FLOOR_HEATING_INPUTS } from './constants';
+import { ViewId, HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs } from './types';
+import { DEFAULT_HEATING_VOLUME_INPUTS, DEFAULT_HEATING_NO_VOLUME_INPUTS, DEFAULT_HEATING_OUTDOOR_AREA_INPUTS, DEFAULT_VENTILATION_VOLUME_INPUTS, DEFAULT_VENTILATION_CURTAIN_INPUTS, DEFAULT_VENTILATION_EQUIPMENT_INPUTS, DEFAULT_POOL_HEATING_INPUTS, DEFAULT_POOL_OPERATING_INPUTS, DEFAULT_POOL_FLOW_INPUTS, DEFAULT_POOL_PERIODIC_INPUTS, DEFAULT_FLOOR_HEATING_INPUTS, DEFAULT_GVS_INPUTS } from './constants';
 import { Sidebar } from './components/Sidebar';
 import { HomeView } from './components/HomeView';
 import { HeatingVolumeCalculator } from './components/HeatingVolumeCalculator';
@@ -16,6 +16,7 @@ import { PoolOperatingCalculator } from './components/PoolOperatingCalculator';
 import { PoolFlowCalculator } from './components/PoolFlowCalculator';
 import { PoolPeriodicCalculator } from './components/PoolPeriodicCalculator';
 import { HeatingFloorCalculator } from './components/HeatingFloorCalculator';
+import { GvsCalculator } from './components/GvsCalculator';
 import { PlaceholderView } from './components/PlaceholderView';
 
 export default function App() {
@@ -184,6 +185,20 @@ export default function App() {
     }
   });
 
+  const [gvsInputs, setGvsInputs] = useState<GvsInputs>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('heatload_inputs_gvs') : null;
+      if (!saved) return DEFAULT_GVS_INPUTS;
+      const parsed = JSON.parse(saved);
+      if (typeof parsed.tgv === 'number' && Array.isArray(parsed.consumers)) {
+        return { ...DEFAULT_GVS_INPUTS, ...parsed };
+      }
+      return DEFAULT_GVS_INPUTS;
+    } catch (e) {
+      return DEFAULT_GVS_INPUTS;
+    }
+  });
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
@@ -232,6 +247,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('heatload_inputs_floor_heating', JSON.stringify(floorHeatingInputs));
   }, [floorHeatingInputs]);
+
+  useEffect(() => {
+    localStorage.setItem('heatload_inputs_gvs', JSON.stringify(gvsInputs));
+  }, [gvsInputs]);
 
   // PWA Install Logic
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -348,7 +367,13 @@ export default function App() {
           />
         );
       case 'gvs':
-        return <PlaceholderView title="Горячее водоснабжение" onBack={() => setCurrentView('home')} />;
+        return (
+          <GvsCalculator
+            inputs={gvsInputs}
+            setInputs={setGvsInputs}
+            onBack={() => setCurrentView('home')}
+          />
+        );
       default:
         return <HomeView onNavigate={setCurrentView} />;
     }
