@@ -8,7 +8,11 @@ import {
   Sliders,
   Sparkles,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Circle,
+  Square,
+  Calculator,
+  Binary
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PoolOperatingInputs } from '../types';
@@ -31,12 +35,14 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
     1: true,
     2: true,
     3: true,
+    4: true, // Step 4 for Vf determination
   });
 
   // Constants
   const QKP_CONST = 120; // Вт/м²
   const TXV_CONST = 5; // °С
   const C_CONST = 1.163; // Вт/л·°С
+  const WASH_NORM_CONST = 7200; // л / м² фильтра
 
   // Mapping purpose values to temperatures and readable labels
   const purposeMap = {
@@ -48,16 +54,53 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
 
   const targetTemp = purposeMap[inputs.purpose].temp;
 
+  // 1. Calculate Vf based on shape & count if vfMode is 'calculate'
+  const calculatedVfDetails = useMemo(() => {
+    const { filterShape, filterDiameter, filterWidth, filterLength, filterCount } = inputs;
+    
+    let singleFilterArea = 0;
+    let formulaDesc = '';
+    let calculationDesc = '';
+
+    if (filterShape === 'circle') {
+      // Af = 3.14 * D^2 / 4
+      singleFilterArea = (3.14 * Math.pow(filterDiameter, 2)) / 4;
+      formulaDesc = 'Af = 3.14 · D² / 4';
+      calculationDesc = `3.14 · (${filterDiameter} м)² / 4 = ${singleFilterArea.toFixed(4)} м²`;
+    } else {
+      // Af = a * b
+      singleFilterArea = filterWidth * filterLength;
+      formulaDesc = 'Af = a · b';
+      calculationDesc = `${filterWidth} м · ${filterLength} м = ${singleFilterArea.toFixed(4)} м²`;
+    }
+
+    const totalArea = singleFilterArea * filterCount;
+    const vfCalculated = WASH_NORM_CONST * totalArea;
+
+    return {
+      singleFilterArea,
+      totalArea,
+      vfCalculated,
+      formulaDesc,
+      calculationDesc
+    };
+  }, [inputs.filterShape, inputs.filterDiameter, inputs.filterWidth, inputs.filterLength, inputs.filterCount]);
+
+  // Actual Vf to be used in thermodynamic calculations
+  const actualVf = useMemo(() => {
+    return inputs.vfMode === 'calculate' ? calculatedVfDetails.vfCalculated : inputs.vf;
+  }, [inputs.vfMode, inputs.vf, calculatedVfDetails.vfCalculated]);
+
+  // 2. Main thermodynamic calculations
   const calculation = useMemo(() => {
-    const { f, vf, tpr } = inputs;
+    const { f, tpr } = inputs;
     
     // Evaporation component: Q_evap = qкп * F
     const qEvap = QKP_CONST * f;
     
     // Filter backwash reheat component: Q_pf = (Vf * (tv - txv) * c) / Tpr
-    // Guard against division by zero
     const hours = tpr || 1;
-    const qPf = (vf * (targetTemp - TXV_CONST) * C_CONST) / hours;
+    const qPf = (actualVf * (targetTemp - TXV_CONST) * C_CONST) / hours;
     
     // Total heat load: Q_tb = Q_evap + Q_pf
     const totalWatts = qEvap + qPf;
@@ -76,9 +119,10 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
       totalMW,
       totalGcal,
       targetTemp,
+      actualVf,
       timestamp: new Date().toLocaleString(),
     };
-  }, [inputs, targetTemp]);
+  }, [inputs.f, inputs.tpr, actualVf, targetTemp]);
 
   const handleReset = () => {
     if (confirm('Сбросить все данные до значений по умолчанию?')) {
@@ -95,9 +139,31 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
   };
 
   const handleExport = () => {
-    const { f, vf, purpose, tpr } = inputs;
+    const { f, purpose, tpr, vfMode, filterShape, filterDiameter, filterWidth, filterLength, filterCount } = inputs;
     const activePurpose = purposeMap[purpose];
     
+    let filterDetailsText = '';
+    if (vfMode === 'calculate') {
+      filterDetailsText = `
+СПОСОБ ОПРЕДЕЛЕНИЯ ОБЪЕМА ПРОМЫВКИ: Расчет по сечению фильтра
+• Форма фильтра: ${filterShape === 'circle' ? 'Круглый' : 'Прямоугольный'}
+${filterShape === 'circle' 
+  ? `• Диаметр фильтра (D): ${filterDiameter} м` 
+  : `• Размеры сторон (a x b): ${filterWidth} м x ${filterLength} м`
+}
+• Количество фильтров (N): ${filterCount} шт
+• Площадь 1 фильтра (Af): ${calculatedVfDetails.singleFilterArea.toFixed(4)} м² (Формула: ${calculatedVfDetails.formulaDesc})
+• Суммарная площадь фильтров (Afсумм): ${calculatedVfDetails.totalArea.toFixed(4)} м²
+• Норма расхода воды: ${WASH_NORM_CONST} л/м²
+• Расчетный объем промывки (Vф): ${actualVf.toFixed(1)} л (Формула: 7200 · Afсумм)
+      `;
+    } else {
+      filterDetailsText = `
+СПОСОБ ОПРЕДЕЛЕНИЯ ОБЪЕМА ПРОМЫВКИ: Ручной ввод
+• Заданный объем воды (Vф): ${actualVf.toLocaleString()} л
+      `;
+    }
+
     const content = `
 РАСЧЕТ ТЕПЛОВОЙ НАГРУЗКИ В РЕЖИМЕ ЭКСПЛУАТАЦИИ БАССЕЙНА ПОСЛЕ ПРОМЫВКИ ФИЛЬТРОВ
 =================================================================================
@@ -106,27 +172,30 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
 1. ИСХОДНЫЕ ДАННЫЕ:
 -------------------
 • Площадь зеркала воды (F): ${f} м²
-• Объем воды для промывки фильтров (Vф): ${vf.toLocaleString()} л
 • Назначение бассейна: ${activePurpose.label}
 • Нормируемая температура воды (tв): ${activePurpose.temp} °C
 • Начальная температура воды (tхв): ${TXV_CONST} °C (константа)
 • Удельная теплоемкость воды (c): ${C_CONST} Вт/л·°С (константа)
 • Удельные теплопотери испарения (qкп): ${QKP_CONST} Вт/м² (константа)
 • Время догрева воды после промывки (Tпр): ${tpr} ч
+${filterDetailsText.trim()}
 
 2. ПОШАГОВЫЙ РАСЧЕТ И ФОРМУЛЫ:
 -------------------------------
-Шаг 1: Расчет тепловых потерь при испарении (Q_исп)
+Шаг 1: Определение объема воды для промывки (Vф)
+  - Vф = ${actualVf.toFixed(1)} л
+
+Шаг 2: Расчет тепловых потерь при испарении (Q_исп)
   - Формула: qкп · F
   - Расчет: ${QKP_CONST} · ${f}
   - Результат: ${calculation.qEvap.toFixed(2)} Вт
 
-Шаг 2: Расчет тепловой мощности после промывки фильтров (Q_пф)
+Шаг 3: Расчет тепловой мощности после промывки фильтров (Q_пф)
   - Формула: Vф · (tв – tхв) · c / Tпр
-  - Расчет: (${vf} · (${activePurpose.temp} – ${TXV_CONST}) · ${C_CONST}) / ${tpr}
+  - Расчет: (${actualVf.toFixed(1)} · (${activePurpose.temp} – ${TXV_CONST}) · ${C_CONST}) / ${tpr}
   - Результат: ${calculation.qPf.toFixed(2)} Вт
 
-Шаг 3: Суммарная тепловая нагрузка в режиме эксплуатации (QТб)
+Шаг 4: Суммарная тепловая нагрузка в режиме эксплуатации (QТб)
   - Формула: QТб = qкп · F + Qпф
   - Расчет в Ваттах: ${calculation.qEvap.toFixed(2)} + ${calculation.qPf.toFixed(2)} = ${calculation.totalWatts.toFixed(2)} Вт
 
@@ -184,7 +253,7 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
           Бассейн в режиме эксплуатации после промывки фильтра
         </h1>
         <p className="text-sm text-zinc-500 max-w-2xl leading-relaxed">
-          Расчет тепловой нагрузки крытого рециркуляционного бассейна в повседневном режиме эксплуатации с учетом тепловых потерь испарения и энергии на быстрый догрев воды, замещенной фильтрационной очисткой.
+          Теплопотери с зеркала испарения плюс компенсирующий нагрев подпиточной воды, поступающей в бассейн после промывки песчаных фильтров.
         </p>
         <div className="h-1 w-20 rounded-full bg-blue-500" />
       </div>
@@ -194,12 +263,13 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
         
         {/* Left Column: Input Panel */}
         <div className="lg:col-span-5 space-y-6">
-          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
+          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6 animate-fade-in">
             <div className="border-b border-zinc-100 pb-4 flex items-center gap-2">
               <Sliders size={18} className="text-zinc-400" />
               <h2 className="text-sm font-bold uppercase tracking-wider">Параметры догрева и очистки</h2>
             </div>
 
+            {/* F input */}
             <InputField 
               label={<span>F — Площадь зеркала воды</span>} 
               id="f" 
@@ -210,25 +280,179 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
               hint="Площадь свободной поверхности (водного зеркала) бассейна."
             />
 
-            <InputField 
-              label={<span>V<sub>ф</sub> — Объем воды для промывки</span>} 
-              id="vf" 
-              value={inputs.vf} 
-              onChange={(val) => setInputs(prev => ({ ...prev, vf: val }))}
-              suffix="л"
-              step="500"
-              hint="Объем воды, требуемый для цикла промывки песчаных фильтров бассейна (после сброса в канализацию уходит чистая вода, замещаемая подпиточной)."
-            />
+            {/* Vf Input block with mode toggle */}
+            <div className="space-y-3.5 pt-2 border-t border-zinc-100">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-zinc-700">V<sub>ф</sub> — Объём воды для промывки</span>
+                <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded border border-indigo-150 font-mono">
+                  {Math.round(actualVf).toLocaleString()} л
+                </span>
+              </div>
 
-            <InputField 
-              label={<span>T<sub>пр</sub> — Время догрева воды после промывки</span>} 
-              id="tpr" 
-              value={inputs.tpr} 
-              onChange={(val) => setInputs(prev => ({ ...prev, tpr: val }))}
-              suffix="ч"
-              step="1"
-              hint="Время догрева замещаемой холодной воды до нормативной температуры бассейна."
-            />
+              {/* Toggle Segment Controls */}
+              <div className="grid grid-cols-2 gap-1 bg-zinc-100 p-0.5 rounded-lg text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => setInputs(prev => ({ ...prev, vfMode: 'manual' }))}
+                  className={`py-1.5 rounded-md transition-all ${
+                    inputs.vfMode === 'manual' 
+                      ? 'bg-white text-zinc-900 shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  Ввести вручную
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInputs(prev => ({ ...prev, vfMode: 'calculate' }))}
+                  className={`py-1.5 rounded-md transition-all flex items-center justify-center gap-1 ${
+                    inputs.vfMode === 'calculate' 
+                      ? 'bg-white text-zinc-900 shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  <Calculator size={12} className="text-indigo-500" />
+                  Рассчитать по фильтру
+                </button>
+              </div>
+
+              {/* View 1: Manual Input */}
+              {inputs.vfMode === 'manual' ? (
+                <div className="animate-fade-in space-y-1">
+                  <InputField 
+                    label={<span>Ввод объёма фильтрационной воды V<sub>ф</sub></span>} 
+                    id="vf" 
+                    value={inputs.vf} 
+                    onChange={(val) => setInputs(prev => ({ ...prev, vf: Math.max(0, val) }))}
+                    suffix="л"
+                    step="500"
+                    hint="Введите нормируемый кубообъем промывки песчаных фильтров бассейна."
+                  />
+                  <p className="text-[10px] text-zinc-400 italic pt-1 leading-normal">
+                    * Для точного нахождения объёма из геометрических параметров фильтра выберите переключатель «Рассчитать по фильтру».
+                  </p>
+                </div>
+              ) : (
+                /* View 2: Calculated from Geometry */
+                <div className="animate-fade-in space-y-4 bg-zinc-55/70 p-4 rounded-xl border border-zinc-150">
+                  <div className="flex items-center gap-1.5 justify-start text-[11px] font-bold uppercase tracking-wider text-indigo-700">
+                    <Binary size={13} />
+                    <span>Расчетная формула: V<sub>ф</sub> = 7200 · A<sub>fсумм</sub>, л</span>
+                  </div>
+
+                  {/* Filter cross section shape select */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Форма сечения фильтра:</label>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setInputs(prev => ({ ...prev, filterShape: 'circle' }))}
+                        className={`py-2 px-3 rounded-lg border flex items-center justify-center gap-2 transition-all font-semibold ${
+                          inputs.filterShape === 'circle'
+                            ? 'bg-indigo-50 border-indigo-400 text-indigo-900'
+                            : 'bg-white border-zinc-200 text-zinc-650 hover:bg-zinc-50'
+                        }`}
+                      >
+                        <Circle size={12} />
+                        Круглый
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInputs(prev => ({ ...prev, filterShape: 'rectangle' }))}
+                        className={`py-2 px-3 rounded-lg border flex items-center justify-center gap-2 transition-all font-semibold ${
+                          inputs.filterShape === 'rectangle'
+                            ? 'bg-indigo-50 border-indigo-400 text-indigo-900'
+                            : 'bg-white border-zinc-200 text-zinc-650 hover:bg-zinc-50'
+                        }`}
+                      >
+                        <Square size={12} />
+                        Квадратный
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Geometry Dimension inputs */}
+                  {inputs.filterShape === 'circle' ? (
+                    <InputField 
+                      label={<span>D — Диаметр одного фильтра</span>} 
+                      id="filterDiameter" 
+                      value={inputs.filterDiameter} 
+                      onChange={(val) => setInputs(prev => ({ ...prev, filterDiameter: Math.max(0.01, val) }))}
+                      suffix="м"
+                      step="0.05"
+                      hint="Диаметр фильтра в самом широком месте для нахождения площади его сечения по формуле: Af = 3.14 · D² / 4."
+                    />
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      <InputField 
+                        label={<span>a — Длина стороны</span>} 
+                        id="filterWidth" 
+                        value={inputs.filterWidth} 
+                        onChange={(val) => setInputs(prev => ({ ...prev, filterWidth: Math.max(0.01, val) }))}
+                        suffix="м"
+                        step="0.05"
+                        hint="Длина стороны сечения прямоугольного фильтра."
+                      />
+                      <InputField 
+                        label={<span>b — Ширина стороны</span>} 
+                        id="filterLength" 
+                        value={inputs.filterLength} 
+                        onChange={(val) => setInputs(prev => ({ ...prev, filterLength: Math.max(0.01, val) }))}
+                        suffix="м"
+                        step="0.05"
+                        hint="Ширина стороны сечения прямоугольного фильтра."
+                      />
+                    </div>
+                  )}
+
+                  {/* Count of filters */}
+                  <InputField 
+                    label={<span>N — Число фильтров в группе</span>} 
+                    id="filterCount" 
+                    value={inputs.filterCount} 
+                    onChange={(val) => setInputs(prev => ({ ...prev, filterCount: Math.max(1, Math.round(val)) }))}
+                    suffix="шт"
+                    step="1"
+                    hint="Количество установленных фильтров одинакового типа для получения суммарной площади их поперечного сечения."
+                  />
+
+                  {/* Mini-Report Card of calculated Vf */}
+                  <div className="bg-white border border-indigo-100 rounded-lg p-3 space-y-2 text-xs text-zinc-650">
+                    <div className="flex justify-between items-center text-[11px] pb-1.5 border-b border-zinc-100">
+                      <span className="font-semibold text-zinc-500">Сечение 1 фильтра (A<sub>f</sub>):</span>
+                      <span className="font-mono font-bold text-zinc-800">
+                        {calculatedVfDetails.singleFilterArea.toFixed(4)} м²
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] pb-1.5 border-b border-zinc-100">
+                      <span className="font-semibold text-zinc-500">Суммарная площадь (A<sub>fсумм</sub>):</span>
+                      <span className="font-mono font-bold text-indigo-700">
+                        {calculatedVfDetails.totalArea.toFixed(4)} м²
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="font-semibold text-zinc-500">Объем промывки V<sub>ф</sub>:</span>
+                      <span className="font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        7200 × {calculatedVfDetails.totalArea.toFixed(4)} = {Math.round(calculatedVfDetails.vfCalculated)} л
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Tpr input */}
+            <div className="pt-2 border-t border-zinc-100">
+              <InputField 
+                label={<span>T<sub>пр</sub> — Время догрева воды после промывки</span>} 
+                id="tpr" 
+                value={inputs.tpr} 
+                onChange={(val) => setInputs(prev => ({ ...prev, tpr: Math.max(0.1, val) }))}
+                suffix="ч"
+                step="1"
+                hint="Время догрева замещаемой холодной воды до нормативной температуры бассейна."
+              />
+            </div>
           </section>
 
           {/* Basin Target Temperature Section */}
@@ -270,7 +494,7 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
             </div>
 
             {/* Displaying fixed constants of methodology */}
-            <div className="rounded-xl bg-zinc-50 p-4 border border-zinc-150 space-y-2.5 text-xs text-zinc-650">
+            <div className="rounded-xl bg-zinc-50 p-4 border border-zinc-150 space-y-2.5 text-xs text-zinc-650 font-sans">
               <div className="flex justify-between items-center pb-2 border-b border-zinc-200/50">
                 <span className="font-semibold text-zinc-500">Потери при испарении (q<sub>кп</sub>):</span>
                 <span className="font-mono font-bold text-zinc-800">120 Вт/м²</span>
@@ -355,7 +579,72 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
               </div>
             </div>
 
-            {/* Step 1: Evaporation load */}
+            {/* Step 1: Vf calculation step if calculate is chosen */}
+            <div className="border border-zinc-150 rounded-xl overflow-hidden">
+              <button 
+                onClick={() => toggleStep(4)}
+                className="w-full bg-zinc-50/50 hover:bg-zinc-50 p-4 flex items-center justify-between text-left transition-colors"
+                id="op-step-4"
+              >
+                <div className="space-y-1">
+                  <span className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-widest">Шаг 1. Определение объёма промывки (V_ф)</span>
+                  <p className="font-bold text-xs text-zinc-900">
+                    Норма расхода воды {WASH_NORM_CONST} л/м² на фильтрационную площадь
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-zinc-800 text-xs">
+                    {Math.round(actualVf).toLocaleString()} литров
+                  </span>
+                  {openSteps[4] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {openSteps[4] && (
+                  <motion.div 
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto" }}
+                    exit={{ height: 0 }}
+                    className="overflow-hidden bg-white border-t border-zinc-100"
+                  >
+                    <div className="p-4 text-xs text-zinc-650 space-y-2.5">
+                      {inputs.vfMode === 'manual' ? (
+                        <div>
+                          <p>Выбран ручной ввод данных. Заданный расход воды для промывки песчаной засыпки фильтров:</p>
+                          <div className="bg-zinc-50 p-3 rounded-lg font-mono text-[11px] leading-relaxed">
+                            V<sub>ф</sub> = <span className="font-bold text-zinc-900">{inputs.vf.toLocaleString()} л</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p>Рассчитаем суммарную площадь фильтровальной группы А<sub>fсумм</sub> и соответствующий объём воды:</p>
+                          <div className="bg-zinc-50 p-3 rounded-lg font-mono text-[11px] leading-relaxed space-y-1.5">
+                            <div>
+                              1. Сечение одного фильтра (форма сечения {inputs.filterShape === 'circle' ? 'круг' : 'прямоугольник/квадрат'}): <br />
+                              <span className="text-zinc-500 font-bold">{calculatedVfDetails.formulaDesc}</span> <br />
+                              <span className="text-indigo-600 font-bold">A<sub>f</sub> = {calculatedVfDetails.calculationDesc}</span>
+                            </div>
+                            <div className="pt-1.5 border-t border-zinc-200/60">
+                              2. Суммарная площадь при N = {inputs.filterCount} шт (А<sub>fсумм</sub>): <br />
+                              A<sub>fсумм</sub> = A<sub>f</sub> · N <br />
+                              A<sub>fсумм</sub> = {calculatedVfDetails.singleFilterArea.toFixed(4)} м² · {inputs.filterCount} = <span className="font-bold text-indigo-700">{calculatedVfDetails.totalArea.toFixed(4)} м²</span>
+                            </div>
+                            <div className="pt-1.5 border-t border-zinc-200/60 font-medium">
+                              3. Расход промывочной воды: <br />
+                              V<sub>ф</sub> = {WASH_NORM_CONST} · А<sub>fсумм</sub> <br />
+                              V<sub>ф</sub> = 7200 · {calculatedVfDetails.totalArea.toFixed(4)} = <span className="font-bold text-emerald-600">{Math.round(calculatedVfDetails.vfCalculated).toLocaleString()} л</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Step 2: Evaporation load */}
             <div className="border border-zinc-150 rounded-xl overflow-hidden">
               <button 
                 onClick={() => toggleStep(1)}
@@ -363,7 +652,7 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
                 id="op-step-1"
               >
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Шаг 1. Теплопотери с поверхности (Q_исп)</span>
+                  <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest">Шаг 2. Теплопотери с поверхности (Q_исп)</span>
                   <p className="font-bold text-xs text-zinc-900">
                     Испарение с площади {inputs.f} м² зеркала бассейна
                   </p>
@@ -399,7 +688,7 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
               </AnimatePresence>
             </div>
 
-            {/* Step 2: filter backwash reheat */}
+            {/* Step 3: filter backwash reheat */}
             <div className="border border-zinc-150 rounded-xl overflow-hidden">
               <button 
                 onClick={() => toggleStep(2)}
@@ -407,9 +696,9 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
                 id="op-step-2"
               >
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest">Шаг 2. Мощность на догрев (Q_пф)</span>
+                  <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest">Шаг 3. Мощность на догрев (Q_пф)</span>
                   <p className="font-bold text-xs text-zinc-900">
-                    Нагрев {inputs.vf.toLocaleString()} л подпиточной воды за {inputs.tpr} ч
+                    Нагрев {Math.round(actualVf).toLocaleString()} л подпиточной воды за {inputs.tpr} ч
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -436,12 +725,12 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
                       <div className="bg-zinc-50 p-3 rounded-lg font-mono text-[11px] leading-relaxed">
                         Q<sub>пф</sub> = [V<sub>ф</sub> · (t<sub>в</sub> – t<sub>хв</sub>) · c] / T<sub>пр</sub> <br /><br />
                         <span className="text-zinc-450">Подставим параметры:</span> <br />
-                        - V<sub>ф</sub> = {inputs.vf.toLocaleString()} л <br />
+                        - V<sub>ф</sub> = {Math.round(actualVf).toLocaleString()} л <br />
                         - t<sub>в</sub> = {targetTemp}°C (нормируемая бассейна) <br />
                         - t<sub>хв</sub> = {TXV_CONST}°C (холодная подпиточная) <br />
                         - c = {C_CONST} Вт/л·°С <br />
                         - T<sub>пр</sub> = {inputs.tpr} ч <br /><br />
-                        Q<sub>пф</sub> = [{inputs.vf} · ({targetTemp} – {TXV_CONST}) · {C_CONST}] / {inputs.tpr} <br />
+                        Q<sub>пф</sub> = [{Math.round(actualVf)} · ({targetTemp} – {TXV_CONST}) · {C_CONST}] / {inputs.tpr} <br />
                         Q<sub>пф</sub> = <span className="font-bold text-zinc-900">{calculation.qPf.toFixed(1)} Вт</span> ({(calculation.qPf / 1000).toFixed(3)} кВт)
                       </div>
                     </div>
@@ -450,7 +739,7 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
               </AnimatePresence>
             </div>
 
-            {/* Step 3: Total Sum Calculation */}
+            {/* Step 4: Total Sum Calculation */}
             <div className="border border-zinc-150 rounded-xl overflow-hidden">
               <button 
                 onClick={() => toggleStep(3)}
@@ -458,13 +747,13 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
                 id="op-step-3"
               >
                 <div className="space-y-1">
-                  <span className="text-[10px] font-extrabold text-amber-600 uppercase tracking-widest">Шаг 3. Итоговая суммарная нагрузка (Q_Тб)</span>
+                  <span className="text-[10px] font-extrabold text-amber-600 uppercase tracking-widest">Шаг 4. Итоговая суммарная нагрузка (Q_Тб)</span>
                   <p className="font-bold text-xs text-zinc-900">
                     Сложение потерь на испарение и догрева подпитки
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono font-bold text-zinc-950 text-xs">
+                  <span className="font-mono font-bold text-zinc-950 text-xs text-indigo-700 font-extrabold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
                     {calculation.totalGcal.toFixed(6)} Гкал/ч
                   </span>
                   {openSteps[3] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -481,11 +770,11 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
                   >
                     <div className="p-4 text-xs text-zinc-650 space-y-2">
                       <p>Вычисляем совокупную часовую нагрузку теплосети в режиме фильтрационной регенерации бассейна:</p>
-                      <div className="bg-zinc-50 p-3 rounded-lg font-mono text-[11px] leading-relaxed">
+                      <div className="bg-zinc-50 p-3 rounded-lg font-mono text-[11px] leading-relaxed font-sans">
                         Q<sub>Тб</sub> = Q<sub>исп</sub> + Q<sub>пф</sub> <br />
                         Q<sub>Тб</sub> = {calculation.qEvap.toFixed(1)} + {calculation.qPf.toFixed(1)} = <span className="font-bold text-zinc-900">{calculation.totalWatts.toFixed(1)} Вт</span> <br /><br />
                         
-                        <span className="text-zinc-500 font-extrabold">Перевод в Гкал/ч:</span> <br />
+                        <span className="text-zinc-500 font-extrabold font-sans">Перевод в Гкал/ч:</span> <br />
                         Q<sub>Гкал/ч</sub> = {calculation.totalWatts.toFixed(1)} · 0.859845 · 10⁻⁶ = <span className="font-bold text-indigo-700">{calculation.totalGcal.toFixed(6)} Гкал/ч</span>
                       </div>
                     </div>
@@ -495,11 +784,53 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
             </div>
           </section>
 
+          {/* Graphical Split visualization of load components */}
+          <div className="space-y-3 bg-zinc-50/50 p-5 rounded-2xl border border-zinc-150">
+            <h5 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex justify-between">
+              <span>Соотношение тепловиков:</span>
+              <span className="font-mono text-zinc-400">100%</span>
+            </h5>
+            
+            {(() => {
+              const total = calculation.totalWatts || 1;
+              const evapPct = (calculation.qEvap / total) * 100;
+              const washPct = (calculation.qPf / total) * 100;
+              return (
+                <div className="space-y-3">
+                  <div className="h-3 w-full bg-zinc-100 rounded-full overflow-hidden flex">
+                    <div 
+                      style={{ width: `${evapPct}%` }}
+                      className="bg-blue-500 h-full transition-all duration-500 ease-out"
+                    />
+                    <div 
+                      style={{ width: `${washPct}%` }}
+                      className="bg-indigo-500 h-full transition-all duration-500 ease-out"
+                    />
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-between text-[11px] pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-full bg-blue-500 shrink-0" />
+                      <span className="text-zinc-500">Потери с зеркала Q<sub>исп</sub>:</span>
+                      <span className="font-mono font-bold text-zinc-800">{Math.round(calculation.qEvap).toLocaleString()} Вт</span>
+                      <span className="text-zinc-450 font-mono">({evapPct.toFixed(1)}%)</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 shrink-0" />
+                      <span className="text-zinc-500">Догрев промывки Q<sub>пф</sub>:</span>
+                      <span className="font-mono font-bold text-zinc-800">{Math.round(calculation.qPf).toLocaleString()} Вт</span>
+                      <span className="text-zinc-450 font-mono">({washPct.toFixed(1)}%)</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Quick FAQ summary */}
           <section className="bg-zinc-50 p-4 rounded-xl border border-zinc-200/50 text-xs text-zinc-500 flex items-start gap-2.5">
             <Info size={16} className="text-zinc-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong>Справка:</strong> Время догрева воды после промывки (T<sub>пр</sub>) обычно варьируется в диапазоне от 2 до 8 часов. Чем меньше это время, тем выше мгновенная тепловая нагрузка на сетевые водонагреватели, но тем быстрее бассейн возвращается к стабильной проектной температуре для пловцов.
+              <strong>Справка:</strong> Время догрева воды после промывки (T<sub>пр</sub>) обычно выбирается от 2 до 8 часов. Снижая время догрева за счет фильтров, мы увеличиваем пиковую тепловую производительность теплообменников, но возвращаем бассейн в норму в разы быстрее.
             </p>
           </section>
         </div>
