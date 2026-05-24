@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -72,6 +72,13 @@ export const DEFAULT_POOL_FLOW_INPUTS: PoolFlowInputs = {
   purpose: 'wellness', // 29 °C
   tcMode: 'auto',
   tcCustom: 12, // default water exchange time 
+};
+
+export const DEFAULT_POOL_PERIODIC_INPUTS: PoolPeriodicInputs = {
+  vbas: 40, // 40 m³ pool volume
+  tFilling: 2, // 2 hours to fill
+  nSessions: 1, // 1 session per day
+  purpose: 'training', // default to training
 };
 
 export const ALPHA_TABLE = [
