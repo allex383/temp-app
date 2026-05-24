@@ -107,6 +107,22 @@ export interface GvsInputs {
   consumers: GvsConsumer[];
 }
 
+export interface GvsPoint {
+  id: string;
+  typeId: string;
+  count: number;
+}
+
+export interface GvsPointsInputs {
+  tgv: number;
+  txv: number;
+  ktpMode: 'insulated' | 'non-insulated';
+  ktpTowels: 'with' | 'without';
+  ktpExternal: 'with' | 'without';
+  ktpOverride: number | null;
+  points: GvsPoint[];
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -130,7 +146,8 @@ export type ViewId =
   | 'tech-pool-operating'
   | 'tech-pool-flow'
   | 'tech-pool-periodic'
-  | 'gvs';
+  | 'gvs'
+  | 'gvs-points';
 
 export interface AppState {
   heatingVolume: HeatingVolumeInputs;
@@ -145,4 +162,5 @@ export interface AppState {
   poolPeriodic: PoolPeriodicInputs;
   floorHeating: FloorHeatingInputs;
   gvs: GvsInputs;
+  gvsPoints: GvsPointsInputs;
 }
