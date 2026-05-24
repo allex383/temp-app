@@ -70,6 +70,13 @@ export interface PoolFlowInputs {
   tcCustom: number; // hours
 }
 
+export interface PoolPeriodicInputs {
+  vbas: number; // m3
+  tFilling: number; // hours for filling
+  nSessions: number; // number of sessions/recharges per day
+  purpose: 'preschool' | 'training' | 'contrast' | 'thermal';
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -92,6 +99,7 @@ export type ViewId =
   | 'tech-pool' 
   | 'tech-pool-operating'
   | 'tech-pool-flow'
+  | 'tech-pool-periodic'
   | 'gvs';
 
 export interface AppState {
@@ -104,4 +112,5 @@ export interface AppState {
   poolHeating: PoolHeatingInputs;
   poolOperating: PoolOperatingInputs;
   poolFlow: PoolFlowInputs;
+  poolPeriodic: PoolPeriodicInputs;
 }
