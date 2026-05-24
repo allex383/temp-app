@@ -123,6 +123,22 @@ export interface GvsPointsInputs {
   points: GvsPoint[];
 }
 
+export interface GvsCateringInputs {
+  tgv: number;
+  txv: number;
+  ktpMode: 'insulated' | 'non-insulated';
+  ktpTowels: 'with' | 'without';
+  ktpExternal: 'with' | 'without';
+  ktpOverride: number | null;
+  cateringType: 'open-cafe' | 'students' | 'industry' | 'restaurant' | 'custom';
+  seats: number;
+  mCustom: number;
+  yCustom: number;
+  hours: number;
+  dishRateType: 'dining' | 'takeaway' | 'custom';
+  dishRateCustom: number;
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -147,7 +163,8 @@ export type ViewId =
   | 'tech-pool-flow'
   | 'tech-pool-periodic'
   | 'gvs'
-  | 'gvs-points';
+  | 'gvs-points'
+  | 'gvs-catering';
 
 export interface AppState {
   heatingVolume: HeatingVolumeInputs;
@@ -163,4 +180,5 @@ export interface AppState {
   floorHeating: FloorHeatingInputs;
   gvs: GvsInputs;
   gvsPoints: GvsPointsInputs;
+  gvsCatering: GvsCateringInputs;
 }
