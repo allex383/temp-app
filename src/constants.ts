@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs, GvsPointsInputs, GvsCateringInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -104,6 +104,43 @@ export const DEFAULT_GVS_INPUTS: GvsInputs = {
       count: 150,
     }
   ],
+};
+
+export const DEFAULT_GVS_POINTS_INPUTS: GvsPointsInputs = {
+  tgv: 65,
+  txv: 5,
+  ktpMode: 'insulated',
+  ktpTowels: 'with',
+  ktpExternal: 'without',
+  ktpOverride: null,
+  points: [
+    {
+      id: 'default-p1',
+      typeId: '1', // Умывальник, рукомойник со смесителем (40 л/ч)
+      count: 10,
+    },
+    {
+      id: 'default-p2',
+      typeId: '2', // Мойка со смесителем (60 л/ч)
+      count: 5,
+    }
+  ],
+};
+
+export const DEFAULT_GVS_CATERING_INPUTS: GvsCateringInputs = {
+  tgv: 65,
+  txv: 5,
+  ktpMode: 'insulated',
+  ktpTowels: 'with',
+  ktpExternal: 'without',
+  ktpOverride: null,
+  cateringType: 'open-cafe',
+  seats: 50,
+  mCustom: 2,
+  yCustom: 0.45,
+  hours: 12,
+  dishRateType: 'dining',
+  dishRateCustom: 3.4
 };
 
 export const ALPHA_TABLE = [
