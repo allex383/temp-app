@@ -53,7 +53,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           items={[
             { id: 'tech-floor', label: 'Теплый пол' },
             { id: 'tech-pool', label: 'Первоначальный нагрев бассейна' },
-            { id: 'tech-pool-operating', label: 'Бассейн после промывки фильтра' }
+            { id: 'tech-pool-operating', label: 'Бассейн после промывки фильтра' },
+            { id: 'tech-pool-flow', label: 'Бассейн проточного типа' }
           ]}
           onNavigate={onNavigate}
         />
