@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -87,6 +87,23 @@ export const DEFAULT_FLOOR_HEATING_INPUTS: FloorHeatingInputs = {
   tnCustom: 29, // 29 °C default
   ti: 18, // 18 °C default
   sn: 100, // 100 m2 default floor area
+};
+
+export const DEFAULT_GVS_INPUTS: GvsInputs = {
+  tgv: 65,
+  txv: 5,
+  ktpMode: 'insulated',
+  ktpTowels: 'with',
+  ktpExternal: 'without',
+  ktpOverride: null,
+  T: 24,
+  consumers: [
+    {
+      id: 'default-1',
+      typeId: '1-c', // Living house: with bath >= 1500mm and showers
+      count: 150,
+    }
+  ],
 };
 
 export const ALPHA_TABLE = [
