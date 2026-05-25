@@ -296,14 +296,14 @@ ${result.totalGcal} Гкал/час
               </div>
               
               <div className="mb-2 flex items-baseline gap-2">
-                <span className="text-6xl font-light tracking-tighter">{result.totalMW}</span>
-                <span className="text-xl font-medium text-zinc-400">МВт</span>
+                <span className="text-6xl font-light tracking-tighter">{result.totalGcal}</span>
+                <span className="text-xl font-medium text-zinc-400">Гкал/ч</span>
               </div>
 
               <div className="mb-8 flex flex-col gap-1">
                 <div className="flex items-center gap-2 text-sm text-zinc-400">
-                  <span className="font-bold text-zinc-300">{result.totalGcal}</span>
-                  <span>Гкал/час</span>
+                  <span className="font-bold text-zinc-300">{result.totalMW}</span>
+                  <span>МВт</span>
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-zinc-500">
                   <span>≈ {result.totalWatts.toLocaleString()} Вт</span>
