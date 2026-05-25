@@ -65,7 +65,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
           items={[
             { id: 'gvs', label: 'ГВС с учетом водопотребителей' },
             { id: 'gvs-points', label: 'ГВС по водоразборным точкам' },
-            { id: 'gvs-catering', label: 'ГВС для предприятий общепита' }
+            { id: 'gvs-catering', label: 'ГВС для предприятий общепита' },
+            { id: 'gvs-pipe', label: 'ГВС по сечению трубы' }
           ]}
           onNavigate={onNavigate}
         />
