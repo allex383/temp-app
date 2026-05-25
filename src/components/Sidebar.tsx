@@ -57,7 +57,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isOpe
       children: [
         { id: 'gvs', label: 'По водопотребителям' },
         { id: 'gvs-points', label: 'По водоразборным точкам' },
-        { id: 'gvs-catering', label: 'Для предприятий общепита' }
+        { id: 'gvs-catering', label: 'Для предприятий общепита' },
+        { id: 'gvs-pipe', label: 'По сечению трубы' }
       ]
     },
   ];
