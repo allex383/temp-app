@@ -139,6 +139,17 @@ export interface GvsCateringInputs {
   dishRateCustom: number;
 }
 
+export interface GvsPipeInputs {
+  tgv: number;
+  txv: number;
+  ktpMode: 'insulated' | 'non-insulated';
+  ktpTowels: 'with' | 'without';
+  ktpExternal: 'with' | 'without';
+  ktpOverride: number | null;
+  diameter: number; // in mm
+  velocity: number; // in m/s (default 1.2)
+}
+
 export interface CalculationResult {
   totalMW: number;
   totalGcal: number;
@@ -164,7 +175,8 @@ export type ViewId =
   | 'tech-pool-periodic'
   | 'gvs'
   | 'gvs-points'
-  | 'gvs-catering';
+  | 'gvs-catering'
+  | 'gvs-pipe';
 
 export interface AppState {
   heatingVolume: HeatingVolumeInputs;
@@ -181,4 +193,5 @@ export interface AppState {
   gvs: GvsInputs;
   gvsPoints: GvsPointsInputs;
   gvsCatering: GvsCateringInputs;
+  gvsPipe: GvsPipeInputs;
 }
