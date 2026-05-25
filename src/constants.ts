@@ -1,4 +1,4 @@
-import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs, GvsPointsInputs, GvsCateringInputs } from './types';
+import { HeatingVolumeInputs, HeatingNoVolumeInputs, HeatingOutdoorAreaInputs, VentilationVolumeInputs, VentilationCurtainInputs, VentilationEquipmentInputs, PoolHeatingInputs, PoolOperatingInputs, PoolFlowInputs, PoolPeriodicInputs, FloorHeatingInputs, GvsInputs, GvsPointsInputs, GvsCateringInputs, GvsPipeInputs } from './types';
 
 export const KTP_CONSTANT = 1.05;
 
@@ -141,6 +141,17 @@ export const DEFAULT_GVS_CATERING_INPUTS: GvsCateringInputs = {
   hours: 12,
   dishRateType: 'dining',
   dishRateCustom: 3.4
+};
+
+export const DEFAULT_GVS_PIPE_INPUTS: GvsPipeInputs = {
+  tgv: 65,
+  txv: 5,
+  ktpMode: 'insulated',
+  ktpTowels: 'with',
+  ktpExternal: 'without',
+  ktpOverride: null,
+  diameter: 25,
+  velocity: 1.2
 };
 
 export const ALPHA_TABLE = [
