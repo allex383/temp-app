@@ -12,6 +12,8 @@ import {
   Flame,
   Calendar,
   HelpCircle,
+  Copy,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PoolPeriodicInputs } from '../types';
@@ -29,6 +31,7 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
   setInputs,
   onBack
 }) => {
+  const [copied, setCopied] = useState(false);
   // Tabs for switching display view between maximum and average hourly values
   const [activeTab, setActiveTab] = useState<'max' | 'average'>('max');
 
@@ -93,12 +96,8 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
     setOpenSteps(prev => ({ ...prev, [stepIndex]: !prev[stepIndex] }));
   };
 
-  const handlePurposeChange = (purpose: keyof typeof purposeMap) => {
-    setInputs(prev => ({ ...prev, purpose }));
-  };
-
-  const handleExport = () => {
-    const content = `
+  const generateReportText = () => {
+    return `
 РАСЧЕТ ТЕПЛОВОЙ НАГРУЗКИ НА ТЕХНОЛОГИЮ БАССЕЙНА С ПЕРИОДИЧЕСКОЙ СМЕНОЙ ВОДЫ
 =================================================================================
 Дата расчета: ${calculations.timestamp}
@@ -128,8 +127,16 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
 
 =================================================================================
     `.trim();
+  };
 
-    const blob = new Blob([content], { type: 'text/plain' });
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generateReportText());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExport = () => {
+    const blob = new Blob([generateReportText()], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -141,28 +148,44 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Navigation Top Bar */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-150 pb-4">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors group"
+          className="group flex items-center gap-2 text-zinc-500 hover:text-zinc-950 transition-colors text-sm font-semibold self-start"
         >
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-bold uppercase tracking-wider">Вернуться в меню</span>
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+          Вернуться в меню
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button 
             onClick={handleReset}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
           >
-            <RefreshCw size={14} />
-            <span className="hidden sm:inline">Сбросить всё</span>
+            <RefreshCw size={13} />
+            <span>Сброс</span>
           </button>
-          <button 
-            onClick={handleExport}
-            className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-zinc-800 active:scale-95"
+          <button
+            onClick={handleCopy}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 hover:bg-zinc-100 font-semibold text-xs active:scale-98 transition-all"
           >
-            <Download size={14} />
-            <span>Сохранить отчет</span>
+            {copied ? (
+              <>
+                <Check size={13} className="text-green-600" />
+                <span>Скопировано!</span>
+              </>
+            ) : (
+              <>
+                <Copy size={13} />
+                <span>Буфер обмена</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg text-blue-700 hover:bg-blue-100 font-semibold text-xs active:scale-98 transition-all"
+          >
+            <Download size={13} />
+            <span>Скачать отчет</span>
           </button>
         </div>
       </div>
