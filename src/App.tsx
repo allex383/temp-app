@@ -247,6 +247,7 @@ export default function App() {
   // Persistence
   useEffect(() => {
     localStorage.setItem('heatload_current_view', currentView);
+    window.scrollTo(0, 0);
   }, [currentView]);
 
   useEffect(() => {
