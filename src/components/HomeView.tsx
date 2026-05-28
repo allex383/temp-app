@@ -39,7 +39,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
         />
         <SectionCard 
           title="Вентиляция" 
-          icon={<Wind className="text-blue-500" />}
+          icon={<Wind className="text-orange-500" />}
           items={[
             { id: 'vent-supply', label: 'Приточная вентиляция по объему' },
             { id: 'vent-curtain', label: 'Тепловая завеса' },
@@ -61,7 +61,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate }) => {
         />
         <SectionCard 
           title="ГВС" 
-          icon={<Droplets className="text-cyan-500" />}
+          icon={<Droplets className="text-orange-500" />}
           items={[
             { id: 'gvs', label: 'ГВС с учетом водопотребителей' },
             { id: 'gvs-points', label: 'ГВС по водоразборным точкам' },
