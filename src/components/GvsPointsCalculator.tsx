@@ -306,7 +306,7 @@ ${itemsReport || '   Точки водоразбора не добавлены.'
       {/* Header Description */}
       <div className="space-y-2">
         <div className="flex items-center gap-2.5">
-          <Droplets size={24} className="text-blue-500 animate-pulse" />
+          <Droplets size={24} className="text-orange-500 animate-pulse" />
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
             ГВС по санитарно-техническим приборам
           </h1>
