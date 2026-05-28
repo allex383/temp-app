@@ -14,7 +14,9 @@ import {
   Calculator,
   Binary,
   Copy,
-  Check
+  Check,
+  User,
+  MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PoolOperatingInputs } from '../types';
@@ -33,6 +35,40 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
   onBack
 }) => {
   const [copied, setCopied] = useState(false);
+
+  // Metadata states for report
+  const [compilerName, setCompilerName] = useState(() => {
+    return localStorage.getItem('heatload_metadata_compiler_name') || '';
+  });
+  const [compilerPosition, setCompilerPosition] = useState(() => {
+    return localStorage.getItem('heatload_metadata_compiler_position') || '';
+  });
+  const [objectAddress, setObjectAddress] = useState(() => {
+    return localStorage.getItem('heatload_metadata_object_address') || '';
+  });
+  const [isSimpleConsumer, setIsSimpleConsumer] = useState(() => {
+    return localStorage.getItem('heatload_metadata_is_simple_consumer') === 'true';
+  });
+
+  const handleCompilerNameChange = (val: string) => {
+    setCompilerName(val);
+    localStorage.setItem('heatload_metadata_compiler_name', val);
+  };
+
+  const handleCompilerPositionChange = (val: string) => {
+    setCompilerPosition(val);
+    localStorage.setItem('heatload_metadata_compiler_position', val);
+  };
+
+  const handleObjectAddressChange = (val: string) => {
+    setObjectAddress(val);
+    localStorage.setItem('heatload_metadata_object_address', val);
+  };
+
+  const handleIsSimpleConsumerChange = (val: boolean) => {
+    setIsSimpleConsumer(val);
+    localStorage.setItem('heatload_metadata_is_simple_consumer', String(val));
+  };
   // State to manage multiple open steps simultaneously
   const [openSteps, setOpenSteps] = useState<Record<number, boolean>>({
     1: true,
@@ -121,20 +157,16 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
       totalKW,
       totalMW,
       totalGcal,
-      targetTemp,
-      actualVf,
-      timestamp: new Date().toLocaleString(),
+      timestamp: new Date().toLocaleString()
     };
   }, [inputs.f, inputs.tpr, actualVf, targetTemp]);
 
-  const handleReset = () => {
-    if (confirm('Сбросить все данные до значений по умолчанию?')) {
-      setInputs(DEFAULT_POOL_OPERATING_INPUTS);
-    }
-  };
-
   const toggleStep = (stepIndex: number) => {
     setOpenSteps(prev => ({ ...prev, [stepIndex]: !prev[stepIndex] }));
+  };
+
+  const handleReset = () => {
+    setInputs(DEFAULT_POOL_OPERATING_INPUTS);
   };
 
   const handlePurposeChange = (purpose: keyof typeof purposeMap) => {
@@ -144,6 +176,10 @@ export const PoolOperatingCalculator: React.FC<PoolOperatingCalculatorProps> = (
   const generateReportText = () => {
     const { f, purpose, tpr, vfMode, filterShape, filterDiameter, filterWidth, filterLength, filterCount } = inputs;
     const activePurpose = purposeMap[purpose];
+    const userRoleText = isSimpleConsumer 
+      ? 'Потребитель' 
+      : `Сотрудник: ${compilerName || 'Не указан'}\nДолжность: ${compilerPosition || 'Не указана'}`;
+    const addressText = objectAddress || 'Не указан';
     
     let filterDetailsText = '';
     if (vfMode === 'calculate') {
@@ -171,7 +207,10 @@ ${filterShape === 'circle'
 РАСЧЕТ ТЕПЛОВОЙ НАГРУЗКИ В РЕЖИМЕ ЭКСПЛУАТАЦИИ БАССЕЙНА ПОСЛЕ ПРОМЫВКИ ФИЛЬТРОВ
 =================================================================================
 Дата расчета: ${calculation.timestamp}
+Адрес объекта: ${addressText}
+Исполнитель: ${userRoleText}
 
+=================================================================================
 1. ИСХОДНЫЕ ДАННЫЕ:
 -------------------
 • Площадь зеркала воды (F): ${f} м²
@@ -289,7 +328,84 @@ ${filterDetailsText.trim()}
       <div className="grid gap-8 lg:grid-cols-12">
         
         {/* Left Column: Input Panel */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-12 xl:col-span-5 space-y-6">
+          {/* Metadata Section */}
+          <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center gap-2 border-b border-zinc-100 pb-4">
+              <User size={18} className="text-zinc-400" />
+              <h2 className="text-sm font-bold uppercase tracking-wider">Информация о расчете</h2>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 rounded-xl border border-zinc-200 p-4 bg-zinc-50/50 hover:bg-zinc-50 transition-colors">
+                <input 
+                  type="checkbox" 
+                  id="isSimpleConsumer"
+                  checked={isSimpleConsumer}
+                  onChange={(e) => handleIsSimpleConsumerChange(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-350 text-zinc-900 focus:ring-zinc-900 focus:ring-offset-0 cursor-pointer accent-zinc-900"
+                />
+                <label htmlFor="isSimpleConsumer" className="flex-1 text-xs font-semibold text-zinc-700 select-none cursor-pointer">
+                  Потребитель
+                </label>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {!isSimpleConsumer && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="grid gap-4 sm:grid-cols-2 overflow-hidden"
+                  >
+                    <div className="space-y-1.5">
+                      <label htmlFor="compilerName" className="text-xs font-semibold tracking-wider text-zinc-500">
+                        ФИО сотрудника
+                      </label>
+                      <input
+                        id="compilerName"
+                        type="text"
+                        value={compilerName}
+                        onChange={(e) => handleCompilerNameChange(e.target.value)}
+                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-900 outline-none transition-all focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label htmlFor="compilerPosition" className="text-xs font-semibold tracking-wider text-zinc-500">
+                        Должность
+                      </label>
+                      <input
+                        id="compilerPosition"
+                        type="text"
+                        value={compilerPosition}
+                        onChange={(e) => handleCompilerPositionChange(e.target.value)}
+                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-900 outline-none transition-all focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="space-y-1.5">
+                <label htmlFor="objectAddress" className="text-xs font-semibold tracking-wider text-zinc-500">
+                  Адрес объекта
+                </label>
+                <div className="relative">
+                  <input
+                    id="objectAddress"
+                    type="text"
+                    value={objectAddress}
+                    onChange={(e) => handleObjectAddressChange(e.target.value)}
+                    className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 pl-9 text-sm font-medium text-zinc-900 outline-none transition-all focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                  />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={14} />
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6 animate-fade-in">
             <div className="border-b border-zinc-100 pb-4 flex items-center gap-2">
               <Sliders size={18} className="text-zinc-400" />
