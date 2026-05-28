@@ -239,7 +239,7 @@ export const GvsPipeCalculator: React.FC<GvsPipeCalculatorProps> = ({
       {/* Header Description */}
       <div className="space-y-2">
         <div className="flex items-center gap-2.5">
-          <Droplets size={24} className="text-blue-500" />
+          <Droplets size={24} className="text-orange-500" />
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
             Расчет ГВС по сечению трубы
           </h1>
