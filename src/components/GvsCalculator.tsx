@@ -348,7 +348,7 @@ ${itemsReport || '   Водопотребители не добавлены.'}
       {/* Header and Back Button */}
       <div className="space-y-2">
         <div className="flex items-center gap-2.5">
-          <Droplets size={24} className="text-blue-500" />
+          <Droplets size={24} className="text-orange-500" />
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl">
             Тепловая нагрузка на систему ГВС
           </h1>
@@ -356,7 +356,7 @@ ${itemsReport || '   Водопотребители не добавлены.'}
         <p className="text-sm text-zinc-500 max-w-3xl leading-relaxed">
           Расчет среднечасовой тепловой нагрузки горячего водоснабжения зданий с учетом конкретной специфики и количества различных групп водопотребителей.
         </p>
-        <div className="h-1 w-20 rounded-full bg-blue-500" />
+        <div className="h-1 w-20 rounded-full bg-orange-500" />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
