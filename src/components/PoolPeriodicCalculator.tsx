@@ -96,6 +96,10 @@ export const PoolPeriodicCalculator: React.FC<PoolPeriodicCalculatorProps> = ({
     setOpenSteps(prev => ({ ...prev, [stepIndex]: !prev[stepIndex] }));
   };
 
+  const handlePurposeChange = (purpose: keyof typeof purposeMap) => {
+    setInputs(prev => ({ ...prev, purpose }));
+  };
+
   const generateReportText = () => {
     return `
 РАСЧЕТ ТЕПЛОВОЙ НАГРУЗКИ НА ТЕХНОЛОГИЮ БАССЕЙНА С ПЕРИОДИЧЕСКОЙ СМЕНОЙ ВОДЫ
