@@ -305,7 +305,7 @@ Q = ${inputs.alpha} × ${inputs.q0} × ${result.volumeSum} × ${result.tempDiff}
 
               <div className="space-y-1.5">
                 <label htmlFor="objectAddress" className="text-xs font-semibold tracking-wider text-zinc-500">
-                  Адрес объекта проектирования
+                  Адрес объекта
                 </label>
                 <div className="relative">
                   <input
