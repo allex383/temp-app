@@ -378,7 +378,7 @@ Qv мах = ${inputs.qv} × ${inputs.vn} × ${result.tempDiff} × 10⁻⁶ = ${r
             >
               <div className="mb-8 flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Итоговая нагрузка</span>
-                <Wind size={20} className="text-sky-400" />
+                <Wind size={20} className="text-orange-400" />
               </div>
               
               <div className="mb-2 flex items-baseline gap-2">
