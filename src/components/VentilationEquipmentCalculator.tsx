@@ -418,14 +418,14 @@ export const VentilationEquipmentCalculator: React.FC<VentilationEquipmentCalcul
           
           {/* Output Total Dashboard */}
           <div className="rounded-3xl bg-zinc-950 p-6 text-white shadow-xl border border-zinc-800 relative overflow-hidden">
-            <div className="absolute right-0 top-0 -mr-6 -mt-6 h-28 w-28 bg-blue-500/10 blur-2xl" />
+            <div className="absolute right-0 top-0 -mr-6 -mt-6 h-28 w-28 bg-orange-500/10 blur-2xl" />
             
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-1.5">
-                <Wind size={14} className="text-blue-400" />
+                <Wind size={14} className="text-orange-400" />
                 Тепловая нагрузка вентиляции
               </span>
-              <span className="rounded-full bg-blue-500/10 px-2.5 py-1 text-[11px] font-bold text-blue-450 border border-blue-500/20">
+              <span className="rounded-full bg-orange-500/10 px-2.5 py-1 text-[11px] font-bold text-orange-400 border border-orange-500/20">
                 Паспортный метод
               </span>
             </div>
