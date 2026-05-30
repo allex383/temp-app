@@ -80,8 +80,12 @@ const cleanAndFormatMoscowAddress = (raw: string): string => {
   const isCountry = (s: string) => /^(россия|рф|российская федерация|russia)$/i.test(s);
   // Index / ZIP Code check (usually 6 digits)
   const isPostalCode = (s: string) => /^\b\d{6}\b$/.test(s);
-  // Administrative district clutter check
-  const isDistrictClutter = (s: string) => /^(район|муниципальный округ|административный округ|ао|юао|зао|вао|свао|сзао|юзао|ювао|нао|тао|зелао|городской округ)/i.test(s) || /район$/i.test(s) || /округ$/i.test(s);
+  // Administrative district/township clutter check
+  const isDistrictClutter = (s: string) => 
+    /^(район|муниципальный округ|административный округ|ао|юао|зао|вао|свао|сзао|юзао|ювао|нао|тао|зелао|городской округ|поселение)\b/i.test(s) || 
+    /район$/i.test(s) || 
+    /округ$/i.test(s) ||
+    /поселение$/i.test(s);
 
   for (const part of parts) {
     const partLower = part.toLowerCase();
@@ -169,7 +173,37 @@ const cleanAndFormatMoscowAddress = (raw: string): string => {
     street = otherParts.shift() || '';
   }
 
-  // Let's assemble in order: 1. City/Region, 2. Street, 3. Remaining segments, 4. House
+  // Filter other parts to remove redundant historical, district, or microdistrict fluff.
+  // In Moscow, any otherParts are 100% redundant historical annotations (like "Нагатино", "Коломенка") when street is present.
+  const filteredOtherParts: string[] = [];
+  const isMoscow = city.toLowerCase().includes('москва') && !city.toLowerCase().includes('область');
+
+  for (const part of otherParts) {
+    const partLower = part.toLowerCase();
+
+    // Check if the part represents a village, settlement or special zone we want to keep
+    const isSettlementOrZone = /^(село|деревня|поселок|посёлок|пгт|снт|днт|товарищество|поселение|жк|парк|усадьба|промзона|территория|микрорайон|мкр|кп)\b/i.test(partLower) ||
+                               /\b(село|деревня|поселок|посёлок|пгт|снт|днт|товарищество|поселение|жк|усадьба|промзона|территория|микрорайон|мкр)\b/i.test(partLower);
+    
+    if (isMoscow) {
+      // If we are in Moscow and have a street, skip pure historical territories/microdistricts like "Нагатино" or "Коломенка"
+      if (street && !isSettlementOrZone) {
+        continue;
+      }
+      // If it mentions "микрорайон", skip inside Moscow if street is present to make it perfectly clean
+      if (street && /микрорайон|мкр/i.test(partLower)) {
+        continue;
+      }
+    } else {
+      // In Moscow Oblast, keep settlements/townships, but skip microdistrict or quarters if street is present
+      if (street && /^(микрорайон|мкр|квартал)\b/i.test(partLower) && !isSettlementOrZone) {
+        continue;
+      }
+    }
+    filteredOtherParts.push(part);
+  }
+
+  // Let's assemble in order: 1. City/Region, 2. Street, 3. Remaining segments (filtered), 4. House
   let finalCity = city || 'г. Москва';
   if (!finalCity.startsWith('г. ') && !finalCity.startsWith('Московская')) {
     finalCity = 'г. ' + finalCity;
@@ -179,8 +213,8 @@ const cleanAndFormatMoscowAddress = (raw: string): string => {
   if (street) {
     resultSegments.push(street);
   }
-  if (otherParts.length > 0) {
-    resultSegments.push(...otherParts);
+  if (filteredOtherParts.length > 0) {
+    resultSegments.push(...filteredOtherParts);
   }
   if (house) {
     resultSegments.push(house);
