@@ -12,3 +12,38 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Yandex.Maps Suggest Auto-complete Dropdown custom styling */
+[class*="-suggest-ring"] {
+  border: 1px solid #e4e4e7 !important; /* border-zinc-200 */
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important; /* shadow-lg */
+  background-color: #ffffff !important;
+  padding: 6px !important;
+  font-family: inherit !important;
+  margin-top: 4px !important;
+  overflow: hidden !important;
+  z-index: 9999 !important;
+}
+
+[class*="-suggest-item"] {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #18181b !important; /* text-zinc-900 */
+  transition: all 0.1s ease-in-out !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+
+[class*="-suggest-item"]:hover,
+[class*="-suggest-item-selected"] {
+  background-color: #f4f4f5 !important; /* bg-zinc-100 */
+  color: #09090b !important; /* text-zinc-950 */
+}
+
+/* Hide Yandex promotional banner line from custom suggestions for a native feel */
+[class*="-suggest-promo"] {
+  display: none !important;
+}
+
