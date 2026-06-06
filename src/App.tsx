@@ -61,6 +61,34 @@ const fetchYandexJSONP = (query: string, apiKey: string): Promise<any> => {
   });
 };
 
+// Preprocesses user search input to normalize short notations so that geocoders (Yandex & OSM) understand them perfectly
+const preprocessSearchQuery = (query: string): string => {
+  if (!query) return '';
+  let q = query.trim();
+
+  // 1. Slash normalization: e.g. "12 / 2" -> "12/2"
+  q = q.replace(/(\d+)\s*\/\s*(\d+)/g, '$1/$2');
+
+  // Replace Russian word "дробь" with "/"
+  q = q.replace(/(\d+)\s+дробь\s+(\d+)/gi, '$1/$2');
+
+  // 2. Korpus (к, корпус): e.g. "12 к 1", "12к1", "12 к.1" -> "12 корпус 1"
+  q = q.replace(/(\d+)\s*(?:,\s*)?(?:корпус|корп|к\.)\s*(\d+|[а-яёА-ЯЁ])\b/gi, '$1 корпус $2');
+  // Standalone "к" followed by digit
+  q = q.replace(/(\d+)\s*(?:,\s*)?\bк\b\s*(\d+)\b/gi, '$1 корпус $2');
+  // Number directly followed by "к" and a number e.g. "12к1"
+  q = q.replace(/\b(\d+)к(\d+)\b/gi, '$1 корпус $2');
+
+  // 3. Stroenie (строение, с, стр): e.g. "12 с 1", "12с1", "12 стр 1" -> "12 строение 1"
+  q = q.replace(/(\d+)\s*(?:,\s*)?(?:строение|стр|с\.)\s*(\d+|[а-яёА-ЯЁ])\b/gi, '$1 строение $2');
+  // Standalone "с" followed by digit
+  q = q.replace(/(\d+)\s*(?:,\s*)?\bс\b\s*(\d+)\b/gi, '$1 строение $2');
+  // Number directly followed by "с" and a number e.g. "12с1"
+  q = q.replace(/\b(\d+)с(\d+)\b/gi, '$1 строение $2');
+
+  return q;
+};
+
 // Cleans up, filters out Russia, ZIP codes, and Federal districts, and forces the format:
 // "г. Москва, [Улица], [Дом]"
 const cleanAndFormatMoscowAddress = (raw: string): string => {
@@ -115,34 +143,42 @@ const cleanAndFormatMoscowAddress = (raw: string): string => {
     }
 
     // Is it a house/building number?
-    // Matches patterns like "28", "28А", "30к1", "30 к. 1", "вл. 1", "стр. 2"
-    // Also "д. 12"
+    // Matches patterns like "28", "28А", "30к1", "30 к. 1", "вл. 1", "стр. 2", "12/2"
     const isHouseNumber = 
       /^(д|дом|стр|строение|корпус|корп|к|вл|владение)\.?\s*\d+/i.test(part) || 
       (/^\d+[-а-яезлиж]?$/i.test(part) && part.length <= 6) ||
-      (/^\d+\s*(корпус|корп|стр|строение|к)\.?\s*\d*/i.test(part)) ||
-      (/^\d+\/\d+$/i.test(part)); // "24/2" etc.
+      (/^\d+\s*(корпус|корп|стр|строение|к|с)\.?\s*\d*/i.test(part)) ||
+      (/^\d+\//i.test(part)); // e.g. "12/2", "12/2к1"
 
     if (isHouseNumber) {
-      let normalizedHouse = part;
-      // If it starts with a number and has no letters/extensions, prepending "д. " is nice and uniform
-      if (/^\d/i.test(part) && 
-          !part.toLowerCase().includes('корп') && 
-          !part.toLowerCase().includes('стр') && 
-          !part.toLowerCase().includes('к.') && 
-          !part.toLowerCase().includes('д.')) {
-        normalizedHouse = 'д. ' + part;
+      let normalizedHouse = part.trim();
+
+      // Remove leading "дом ", "д. ", "вл. ", "владение " to rebuild standard prefix
+      normalizedHouse = normalizedHouse
+        .replace(/^(дом|д|вл|владение)\.?\s+/i, '')
+        .replace(/^(дом|д)\.?\s*(?=\d)/i, '');
+
+      // Normalize spaces around slash
+      normalizedHouse = normalizedHouse.replace(/\s*\/\s*/g, '/');
+
+      // Normalize corpus: e.g. "12к1" -> "12, к. 1", "12 к 1" -> "12, к. 1"
+      normalizedHouse = normalizedHouse.replace(/(\d+)\s*(?:,\s*)?(?:корпус|корп|к\.?)\s*(\d+|[а-яёА-ЯЁ])\b/gi, '$1, к. $2');
+
+      // Normalize stroenie: e.g. "12с1" -> "12, стр. 1", "12 стр 1" -> "12, стр. 1"
+      normalizedHouse = normalizedHouse.replace(/(\d+)\s*(?:,\s*)?(?:строение|стр|с\.?)\s*(\d+|[а-яёА-ЯЁ])\b/gi, '$1, стр. $2');
+
+      // Re-add correct prefix
+      if (/^(вл|владение)/i.test(part)) {
+        normalizedHouse = 'вл. ' + normalizedHouse.replace(/^(вл|владение)\.?\s*/i, '');
       } else {
-        // Standardize common prefixes
-        normalizedHouse = normalizedHouse
-          .replace(/^дом\s+/i, 'д. ')
-          .replace(/^д\.\s*/i, 'д. ')
-          .replace(/строение\s+/i, 'стр. ')
-          .replace(/стр\.\s*/i, 'стр. ')
-          .replace(/корпус\s+/i, 'к. ')
-          .replace(/корп\.\s*/i, 'к. ')
-          .replace(/к\.\s*/i, 'к. ');
+        normalizedHouse = 'д. ' + normalizedHouse;
       }
+
+      // Cleanup consecutive commas or trailing commas
+      normalizedHouse = normalizedHouse
+        .replace(/,\s*,/g, ',')
+        .replace(/\s+/g, ' ');
+
       house = normalizedHouse;
       continue;
     }
@@ -673,7 +709,7 @@ export default function App() {
       if (apiKey) {
         try {
           // Prepend "Москва, " to force Yandex Geocoder to prefer and search inside Moscow
-          let searchGeo = addressQuery;
+          let searchGeo = preprocessSearchQuery(addressQuery);
           if (!searchGeo.toLowerCase().includes('москва') && !searchGeo.toLowerCase().includes('московская')) {
             searchGeo = 'Москва, ' + searchGeo;
           }
@@ -709,7 +745,7 @@ export default function App() {
       if (yandexSucceeded) return;
 
       // High-fidelity local database search to avoid errors & work beautifully offline (Moscow Only)
-      const queryLower = addressQuery.toLowerCase();
+      const queryLower = preprocessSearchQuery(addressQuery).toLowerCase();
       const localSuggestions: string[] = [];
 
       // Moscow database (highly prioritized because of PAO "MOEK")
@@ -761,7 +797,7 @@ export default function App() {
 
       // Fallback query Nominatim asynchronously but quietly without throwing logs
       try {
-        let osmQuery = addressQuery;
+        let osmQuery = preprocessSearchQuery(addressQuery);
         if (!osmQuery.toLowerCase().includes('москва') && !osmQuery.toLowerCase().includes('московская')) {
           osmQuery = 'Москва, ' + osmQuery;
         }
